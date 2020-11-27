@@ -13,11 +13,17 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(publicPath));
 
-app.get('/test', (req,res) => {
+app.post('/test', (req,res) => {
 
     res.json({
         ok: true
     })
+
+})
+
+app.get('/', (req,res) => {
+
+    res.status(200).send('Hola')
 
 })
 
