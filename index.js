@@ -1,36 +1,72 @@
-const express = require('express');
+require('./config/config')
+const express = require('express')
 const bodyParser = require('body-parser')
+const pg = require('postgis-promise')({})
 
-const path = require('path');
+const path = require('path')
 
-const app = express();
+const app = express()
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
-const publicPath = path.resolve(__dirname, '../public');
-const port = process.env.PORT || 3000;
+const publicPath = path.resolve(__dirname, '../public')
 
-app.use(express.static(publicPath));
+const abreDB = () => {
 
-app.post('/test', (req,res) => {
+   
+    const db = pg(process.env.urlDB)
 
-    res.json({
-        ok: true
+    return db
+
+}
+
+const base = abreDB()
+
+
+app.use(express.static(publicPath))
+
+app.get('/arbolitos', (req,res) => {
+
+    base.result('select * from arbolitos order by nombrecientifico').then(data => {
+
+        res.json({
+            data
+        })
+
     })
-
+   
 })
 
-app.get('/', (req,res) => {
+app.get('/especies', (req,res) => {
 
-    res.status(200).send('Hola')
+    base.result('select * from especies order by nombrecientifico').then(data => {
 
+        res.json({
+            data
+        })
+
+    })
+   
 })
 
-app.listen(port, (err) => {
+app.get('/localidades', (req,res) => {
+
+    base.result('select * from localidades order by nombre').then(data => {
+
+        res.json({
+            data
+        })
+
+    })
+   
+})
+
+
+app.listen(process.env.PORT, (err) => {
 
     if (err) throw new Error(err);
 
-    console.log(`Servidor corriendo en puerto ${ port }`);
+    console.log(`Servidor corriendo en puerto ${ process.env.PORT }`)
 
-});
+})
