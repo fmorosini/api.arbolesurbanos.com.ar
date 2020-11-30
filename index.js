@@ -10,7 +10,7 @@ const app = express()
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
-const publicPath = path.resolve(__dirname, '../public')
+const publicPath = path.resolve(__dirname, 'public')
 
 const abreDB = () => {
 
