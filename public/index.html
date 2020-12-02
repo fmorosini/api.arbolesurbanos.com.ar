@@ -31,7 +31,13 @@ html, body{
 <script src="js/leaflet-tilelayer-wmts.js"></script>
 <script type="application/javascript">
 
+function invertir(arreglo){
+	var arreglo_invertido = [];
+	arreglo_invertido[1] = arreglo[0];
+	arreglo_invertido[0] = arreglo[1];
 
+	return arreglo_invertido;
+}
 
 function cargarMapa()
 {
@@ -79,11 +85,85 @@ function cargarMapa()
 
 	var rootUrl = 'http://192.168.1.200:3000/arbolitos';
 
-	$.ajax({
-		url: rootUrl
-	}).done(function(data) {
+	$.get(rootUrl, function(data) {
 
-		console.log(data)
+		console.log(data.data)
+		
+		for(var i = 0; i < data.data.length; i++){
+		
+			
+
+			var icono_arbol_1 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/1/' + data.data[i].imagen,
+
+			//iconSize:     [80, 80], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
+
+			var icono_arbol_2 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/2/' + data.data[i].imagen,
+
+			//iconSize:     [60, 60], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
+
+			var icono_arbol_3 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/3/' + data.data[i].imagen,
+
+			//iconSize:     [40, 40], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
+
+			var icono_arbol; //alert(feature.properties.magnitud);
+
+			if(data.data[i].magnitud == 1)
+			{
+				icono_arbol = icono_arbol_1;
+			}
+			else if(data.data[i].magnitud == 2)
+			{
+				icono_arbol = icono_arbol_2;
+			}
+			else if(data.data[i].magnitud == 3)
+			{
+				icono_arbol = icono_arbol_3;
+			}
+
+			var m = new L.marker(invertir(data.data[i].posicion.coordinates), {icon: icono_arbol, title: data.data[i].nombrevulgar});
+
+			var html_popup = "<div class='card'>";
+			
+			
+			html_popup += " <div class='card-header'><center><image  class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.data[i].thumbnail) + "></image></center></div>";
+			
+			
+			html_popup += " <div class='card-body'>";
+			html_popup += "       <p><h5><strong>" + data.data[i].nombrevulgar + "</strong></h5>";
+			html_popup += "         <hr />";
+			html_popup += "         <h5><strong>Nombre científico:</strong> " + data.data[i].nombrecientifico + "</h5>";
+			html_popup += "         <h5><strong>Tipo:</strong> " + data.data[i].tipo + "</h5>";
+			html_popup += "         <h5><strong>Follaje:</strong> " + data.data[i].follaje + "</h5>";
+			html_popup += "		  <h5><strong>Magnitud:</strong> " + data.data[i].magnitud + "</h5>";
+			html_popup += "     </p>";
+			html_popup += "  </div>";
+			
+			html_popup += "</div>";
+
+			var popup = L.responsivePopup({ autoPanPadding: [10,10] }).setContent(html_popup);
+
+			m.bindPopup(popup);
+			m.addTo(cluster)
+			
+		}
 
 	})
 
