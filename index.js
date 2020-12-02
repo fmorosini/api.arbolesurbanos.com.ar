@@ -1,7 +1,7 @@
 require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
-const pg = require('postgis-promise')({})
+const pg = require('postgis-promise')({geoJSON: true })
 
 const path = require('path')
 
@@ -28,9 +28,11 @@ app.use(express.static(publicPath))
 
 app.get('/arbolitos', (req,res) => {
 
-    base.result('select * from arbolitos order by nombrecientifico').then(data => {
+    base.result("SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (  SELECT 'Feature' As type, ST_AsGeoJSON(posicion)::json As geometry,           row_to_json((nombrecientifico,nombrevulgar,imagen,thumbnail,magnitud,follaje)) As properties FROM arbolitos        ) As f    ) As fc")
+    
+    .then(data => {
 
-        res.json({
+        res.send({
             data
         })
 

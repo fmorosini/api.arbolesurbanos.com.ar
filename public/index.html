@@ -77,12 +77,18 @@ function cargarMapa()
 
 
 
-	var rootUrl = 'https://localhost:3000/arbolitos';
+	var rootUrl = 'http://192.168.1.200:3000/arbolitos';
 
-	
+	$.ajax({
+		url: rootUrl
+	}).done(function(data) {
+
+		console.log(data)
+
+	})
+
+
 }
-
-
 
 </script>
 </head>
