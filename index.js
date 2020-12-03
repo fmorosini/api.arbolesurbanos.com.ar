@@ -84,13 +84,13 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
 
     let localidad = req.params.localidad.toUpperCase()
 
-    let nombre = req.query.nombre.toUpperCase()
+    let nombre = req.query.nombre
 
     sql += ` where upper(nombre) = '${localidad}'`
 
     if(nombre){
 
-        sql += ` and (upper(nombrecientifico) like '%${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
+        sql += ` and (upper(nombrecientifico) like '%${nombre.toUpperCase()}%' or upper(nombrevulgar) like '%${nombre.toUpperCase()}%')`
 
     }
 
