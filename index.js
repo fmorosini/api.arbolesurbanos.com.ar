@@ -62,7 +62,7 @@ app.get('/arbolitos/:nombre', (req,res) => {
 
     sql += ` where (upper(nombrecientifico) like '%${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
 
-    console.log(sql)
+    //console.log(sql)
       
     base.any(sql)
     
@@ -75,6 +75,39 @@ app.get('/arbolitos/:nombre', (req,res) => {
     })
    
 })
+
+// Trae arbolitos por localidad y nombre cientifico o vulgar (opcional)
+
+app.get('/arbolitos/localidades/:localidad', (req,res) => {
+
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+
+    let localidad = req.params.localidad.toUpperCase()
+
+    let nombre = req.query.nombre.toUpperCase()
+
+    sql += ` where upper(nombre) = '${localidad}'`
+
+    if(nombre){
+
+        sql += ` and (upper(nombrecientifico) like '%${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
+
+    }
+
+    //console.log(sql)
+      
+    base.any(sql)
+    
+    .then(data => {
+
+        res.send({
+            data
+        })
+
+    })
+   
+})
+
 
 app.get('/especies', (req,res) => {
 
