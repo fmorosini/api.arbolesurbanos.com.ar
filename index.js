@@ -3,9 +3,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const pg = require('postgis-promise')({})
 
+const hbs = require('hbs')
+
 const path = require('path')
 
 const app = express()
+
+app.set('view engine', 'hbs');
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
@@ -64,11 +68,22 @@ app.get('/localidades', (req,res) => {
    
 })
 
+app.get('/', (req,res) => {
+
+    let datos = {
+        urlApi: process.env.urlApi
+    }
+    
+    res.render('index',datos)
+
+})
+
 
 app.listen(process.env.PORT, (err) => {
 
     if (err) throw new Error(err);
 
     console.log(`Servidor corriendo en puerto ${ process.env.PORT }`)
+    console.log(process.env.NODE_ENV)
 
 })
