@@ -1,0 +1,12 @@
+{
+  apps : [{
+    name        : "api.arbolado",
+    script      : "./index.js",
+    env: {
+      "NODE_ENV": "desarrollo",
+    },
+    env_produccion : {
+       "NODE_ENV": "produccion"
+    }
+  }]
+}
