@@ -30,9 +30,41 @@ const base = abreDB()
 
 app.use(express.static(publicPath))
 
+
+//  ============================================= GETs =====================================================================================================
+
+
+// Trae Todos los arbolitos
+
 app.get('/arbolitos', (req,res) => {
 
-    base.any("SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos")
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+     
+    base.any(sql)
+    
+    .then(data => {
+
+        res.send({
+            data
+        })
+
+    })
+   
+})
+
+// Trae arbolitos filtrado por nombre científico o vulgar
+
+app.get('/arbolitos/:nombre', (req,res) => {
+
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+
+    let nombre = req.params.nombre.toUpperCase()
+
+    sql += ` where (upper(nombrecientifico) like '%${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
+
+    console.log(sql)
+      
+    base.any(sql)
     
     .then(data => {
 
@@ -78,12 +110,15 @@ app.get('/', (req,res) => {
 
 })
 
+// ========================================== Fin GETs ========================================================================================
+
 
 app.listen(process.env.PORT, (err) => {
 
     if (err) throw new Error(err);
 
     console.log(`Servidor corriendo en puerto ${ process.env.PORT }`)
+
     console.log(process.env.NODE_ENV)
 
 })
