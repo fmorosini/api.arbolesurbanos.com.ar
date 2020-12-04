@@ -1,7 +1,7 @@
 require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
-const pg = require('postgis-promise')({})
+const pg = require('postgis-promise')({geoJSON: true})
 
 const hbs = require('hbs')
 
@@ -47,6 +47,81 @@ app.get('/arbolitos', (req,res) => {
         res.send({
             data
         })
+
+    })
+   
+})
+
+// Idem pero en GeoJSON
+
+app.get('/arbolitos2', (req,res) => {
+
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+     
+    base.any(sql)
+    
+    .then(data => {
+
+
+        class featureCollection {
+
+            constructor(features) {
+
+                this.type = "FeatureCollection"
+                this.features = features
+
+            }
+        }
+
+        class feature {
+
+            constructor(geometry, properties) {
+
+                this.type = "Feature"
+                this.geometry = geometry
+                this.properties = properties
+
+            }
+        }
+        
+        class geometry {
+
+            constructor(coordinates) {
+
+                this.type = "Point"
+                this.coordinates = coordinates
+
+            }
+        }
+
+        class properties {
+
+            constructor(nombrevulgar, nombrecientifico, tipo, follaje, magnitud, imagen, thumbnail) {
+
+                this.nombrevulgar = nombrevulgar
+                this.nombrecientifico = nombrecientifico
+                this.tipo = tipo
+                this.magnitud = magnitud
+                this.follaje = follaje
+                this.imagen = imagen
+                this.thumbnail = thumbnail
+
+            }
+        }
+
+        let fichures = new featureCollection([])
+
+        data.forEach(arbol => {
+
+            let geometria = new geometry(arbol.posicion.coordinates)
+            let propiedades = new properties(arbol.nombrevulgar,arbol.nombrecientifico,arbol.tipo,arbol.follaje,arbol.magnitud,arbol.imagen,arbol.thumbnail)
+            let fichur = new feature(geometria,propiedades)
+
+            fichures.features.push(fichur)
+            
+        })
+
+        res.send(fichures)
 
     })
    
@@ -155,3 +230,4 @@ app.listen(process.env.PORT, (err) => {
     console.log(process.env.NODE_ENV)
 
 })
+
