@@ -3,6 +3,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const pg = require('postgis-promise')({geoJSON: true})
 
+const { toGeoJSON } = require('./utils/features.js')
+
 const hbs = require('hbs')
 
 const path = require('path')
@@ -44,88 +46,12 @@ app.get('/arbolitos', (req,res) => {
     
     .then(data => {
 
-        res.send({
-            data
-        })
+        res.send(toGeoJSON(data))
 
     })
    
 })
 
-// Idem pero en GeoJSON
-
-app.get('/arbolitos2', (req,res) => {
-
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
-     
-    base.any(sql)
-    
-    .then(data => {
-
-
-        class featureCollection {
-
-            constructor(features) {
-
-                this.type = "FeatureCollection"
-                this.features = features
-
-            }
-        }
-
-        class feature {
-
-            constructor(geometry, properties) {
-
-                this.type = "Feature"
-                this.geometry = geometry
-                this.properties = properties
-
-            }
-        }
-        
-        class geometry {
-
-            constructor(coordinates) {
-
-                this.type = "Point"
-                this.coordinates = coordinates
-
-            }
-        }
-
-        class properties {
-
-            constructor(nombrevulgar, nombrecientifico, tipo, follaje, magnitud, imagen, thumbnail) {
-
-                this.nombrevulgar = nombrevulgar
-                this.nombrecientifico = nombrecientifico
-                this.tipo = tipo
-                this.magnitud = magnitud
-                this.follaje = follaje
-                this.imagen = imagen
-                this.thumbnail = thumbnail
-
-            }
-        }
-
-        let fichures = new featureCollection([])
-
-        data.forEach(arbol => {
-
-            let geometria = new geometry(arbol.posicion.coordinates)
-            let propiedades = new properties(arbol.nombrevulgar,arbol.nombrecientifico,arbol.tipo,arbol.follaje,arbol.magnitud,arbol.imagen,arbol.thumbnail)
-            let fichur = new feature(geometria,propiedades)
-
-            fichures.features.push(fichur)
-            
-        })
-
-        res.send(fichures)
-
-    })
-   
-})
 
 // Trae arbolitos filtrado por nombre científico o vulgar
 
@@ -143,9 +69,7 @@ app.get('/arbolitos/:nombre', (req,res) => {
     
     .then(data => {
 
-        res.send({
-            data
-        })
+        res.send(toGeoJSON(data))
 
     })
    
@@ -175,9 +99,7 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
     
     .then(data => {
 
-        res.send({
-            data
-        })
+        res.send(toGeoJSON(data))
 
     })
    
@@ -186,11 +108,10 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
 
 app.get('/especies', (req,res) => {
 
-    base.result('select * from especies order by nombrecientifico').then(data => {
+    base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
+    .then(data => {
 
-        res.json({
-            data
-        })
+        res.send(data)
 
     })
    
@@ -198,11 +119,10 @@ app.get('/especies', (req,res) => {
 
 app.get('/localidades', (req,res) => {
 
-    base.result('select * from localidades order by nombre').then(data => {
+    base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by nombre')
+    .then(data => {
 
-        res.json({
-            data
-        })
+        res.send(data)
 
     })
    
