@@ -105,6 +105,32 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
    
 })
 
+app.post('/arbolitos/bbox/', (req,res) => {
+
+        
+    let bbox = req.body
+
+   
+
+    let x1 = bbox['NE[]'][0]
+    let y1 = bbox['NE[]'][1]
+    let x2 = bbox['SO[]'][0]
+    let y2 = bbox['SO[]'][1]   
+    
+    
+    
+    base.result(`select nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`)
+    .then(data => {
+
+        //res.send(toGeoJSON(data))
+
+        res.send(data)
+
+    })  
+    
+
+})
+
 
 app.get('/especies', (req,res) => {
 

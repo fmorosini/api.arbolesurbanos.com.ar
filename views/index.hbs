@@ -87,6 +87,28 @@ function cargarMapa()
 
 	mymap.addLayer(base);
 
+	
+	mymap.on('zoomend', function(e){
+		
+		var bbox = mymap.getBounds();
+
+		$.ajax(
+			{'url': '{{urlApi}}arbolitos/bbox',
+			'type': 'POST',
+			'data': {
+			'NE': [bbox._northEast.lng,bbox._northEast.lat],
+			'SO': [bbox._southWest.lng,bbox._southWest.lat]},
+			'dataType': 'json',
+			'success': function(data){
+
+			console.log(data)
+
+			}
+
+		})
+	})
+	
+
 
 	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
 
@@ -96,8 +118,7 @@ function cargarMapa()
 	L.control.locate().addTo(mymap);
 
 
-
-	var rootUrl = '{{urlApi}}';
+	var rootUrl = '{{urlApi}}arbolitos';
 
 	$.get(rootUrl, function(data) {
 
