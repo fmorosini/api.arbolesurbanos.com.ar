@@ -53,6 +53,13 @@ function invertir(arreglo){
 	return arreglo_invertido;
 }
 
+function getArbolitosByBBOX_POST(bbox){
+
+	
+		
+
+}
+
 function cargarMapa()
 {
 
@@ -77,7 +84,7 @@ function cargarMapa()
 				style: "normal",
 				tilematrixSet: "EPSG:3857",
 				format: "image/png",
-				maxZoom: 30,
+				maxZoom: 21,
 				attribution: "<a href='https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts?REQUEST=GetCapabilities'>WMTS IGN</a>"
 			}
 			);
@@ -87,11 +94,10 @@ function cargarMapa()
 
 	mymap.addLayer(base);
 
-	
-	mymap.on('zoomend', function(e){
-		
-		var bbox = mymap.getBounds();
+	mymap.on('moveend', function(e){
 
+		var bbox = mymap.getBounds();
+		
 		$.ajax(
 			{'url': '{{urlApi}}arbolitos/bbox',
 			'type': 'POST',
@@ -101,12 +107,14 @@ function cargarMapa()
 			'dataType': 'json',
 			'success': function(data){
 
-			console.log(data)
+				console.log(data);
 
 			}
 
 		})
+
 	})
+
 	
 
 
@@ -207,10 +215,10 @@ function cargarMapa()
 
 </script>
 </head>
-<body onload="cargarMapa();">				
+<body onload="cargarMapa();">			
 	
        
-		<div class="buscador"><input type="text" id="txtBuscar" name="txtBuscar" placeholder="Buscar por Nombre científico ó vulgar" /></div>
+		<div class="buscador"><input class='form-control' type="text" id="txtBuscar" name="txtBuscar" placeholder="Nombre científico/vulgar" /></div>
 			
 
 		<div id="mapid"></div>

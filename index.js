@@ -110,8 +110,9 @@ app.post('/arbolitos/bbox/', (req,res) => {
         
     let bbox = req.body
 
+    //console.log(bbox)
    
-
+    
     let x1 = bbox['NE[]'][0]
     let y1 = bbox['NE[]'][1]
     let x2 = bbox['SO[]'][0]
@@ -127,6 +128,8 @@ app.post('/arbolitos/bbox/', (req,res) => {
         res.send(data)
 
     })  
+
+    
     
 
 })
