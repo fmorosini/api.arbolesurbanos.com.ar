@@ -1,6 +1,7 @@
 require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const pg = require('postgis-promise')({geoJSON: true})
 
 const { toGeoJSON } = require('./utils/features.js')
