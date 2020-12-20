@@ -35,6 +35,35 @@ app.use(express.static(publicPath))
 
 //  ============================================= GETs =====================================================================================================
 
+//Devuelve un array con los nonbres vulgares y científicos ordenados por nombre filtrados por un LIKE del parámetro
+
+
+app.get('/nombres/:buscar', (req,res) => {
+
+        
+    let nombre = req.params.buscar.toUpperCase()
+
+    let sql = `select nombrecientifico as nombre from especies where upper(nombrecientifico) like '${nombre}%' union select nombrevulgar as nombre from especies where upper(nombrevulgar) like '${nombre}%' order by 1`
+   
+    base.result(sql)
+    .then(data => {
+
+        let nombres = ''
+
+        let i = 1
+
+        data.rows.forEach(item => {
+
+            nombres += `<div><a class='suggest-element' nombre='${item.nombre}' id='arbol.${i}'>${item.nombre}</a></div>`
+            i++
+            
+        });
+
+        res.send(nombres)
+
+    })
+   
+})
 
 // Trae Todos los arbolitos
 
@@ -145,6 +174,7 @@ app.get('/especies', (req,res) => {
     })
    
 })
+
 
 app.get('/localidades', (req,res) => {
 
