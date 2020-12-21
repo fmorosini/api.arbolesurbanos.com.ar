@@ -21,11 +21,18 @@
             top: 10px;
             margin-left: 33%;
             margin-right: 33%;
-			width: 100%;
-			
-        }
+			width: 100%;	
+			display: inline-block;					
+        }		
 		#txtBuscar {
+			width: 100%;
+		}
+		#formulario{
+			padding-top: 0;
 			width: 33%;
+		}
+		.suggest-element{
+			color: black;
 		}
         </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
@@ -55,10 +62,10 @@ function invertir(arreglo){
 
 function getArbolitosByBBOX_POST(bbox){
 
-	
 		
 
 }
+
 
 function cargarMapa()
 {
@@ -95,7 +102,7 @@ function cargarMapa()
 	mymap.addLayer(base);
 
 	/*
-
+	
 	mymap.on('moveend', function(e){
 
 		var bbox = mymap.getBounds();
@@ -118,6 +125,7 @@ function cargarMapa()
 	})
 
 	*/
+
 	
 
 
@@ -213,6 +221,50 @@ function cargarMapa()
 
 	})
 
+	$('#frmBuscar').on('submit', function(e){
+
+		e.preventDefault()
+		
+		console.log($('#txtBuscar').val())
+
+	})
+
+	$('#txtBuscar').keyup(function() {
+		var nombre = $(this).val();
+	
+	if(nombre == ''){
+		$('#suggestions').empty();
+	}
+	else{
+	
+		$.ajax({
+				type: "GET",
+				url: "https://api.arbolesurbanos.com.ar/nombres/" + nombre,
+				success: function(data) {
+
+				
+
+					//Escribimos las sugerencias que nos manda la consulta
+					$('#suggestions').fadeIn(1000).html(data);
+					//Al hacer click en algua de las sugerencias
+					$('.suggest-element').on('click', function(){
+							//Obtenemos la id unica de la sugerencia pulsada
+							var id = $(this).attr('id'); 
+							var nombre = $(this).attr('nombre')
+							//Editamos el valor del input con data de la sugerencia pulsada
+							$('#txtBuscar').val(nombre);
+							//Hacemos desaparecer el resto de sugerencias
+							$('#suggestions').fadeOut(1000);
+							return false;
+						});
+					
+				}
+			});
+
+		}
+	});
+
+
 
 }
 
@@ -221,8 +273,18 @@ function cargarMapa()
 <body onload="cargarMapa();">			
 	
        
-		<div class="buscador"><input class='form-control' type="text" id="txtBuscar" name="txtBuscar" placeholder="Nombre científico/vulgar" /></div>
-			
+		
+		<div class="buscador">
+			<form id="frmBuscar" class="form-inline" method="post">
+				<div id="formulario" class="input-group input-group-sm">
+					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off">
+					<span class="input-group-btn">
+						<button id="btnBuscar" type="submit" class="btn btn-info btn-flat"><i class="fa fa-search"></i></button>
+					</span>
+    			</div>
+			</form>
+			<div id="suggestions"></div>
+		</div>		
 
 		<div id="mapid"></div>
 
