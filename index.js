@@ -97,7 +97,7 @@ app.get('/arbolitos/:nombre', (req,res) => {
 
     let nombre = req.params.nombre.toUpperCase()
 
-    sql += ` where (upper(nombrecientifico) like '%${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
+    sql += ` where (upper(nombrecientifico) like '${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
 
     //console.log(sql)
       
