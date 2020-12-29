@@ -63,62 +63,60 @@ function invertir(arreglo){
 function limpiarSugerencias(){
 	$('#suggestions').empty();
 	$('#txtBuscar').val('');
+	cargarMapa(1);
 }
 
-$('#txtBuscar').keyup(function() {
-		var nombre = $(this).val();
-	
+function traeSugerencias() {
+	var nombre = $('#txtBuscar').val();
+	//console.log(nombre);
+
 	if(nombre == ''){
 		$('#suggestions').empty();
 	}
 	else{
-	
+
 		$.ajax({
-				type: "GET",
-				url: "https://api.arbolesurbanos.com.ar/nombres/" + nombre,
-				success: function(data) {
+			type: "GET",
+			url: '{{urlApi}}nombres/' + nombre,
+			success: function(data) {
 
+			
+
+				//Escribimos las sugerencias que nos manda la consulta
+				$('#suggestions').fadeIn(1000).html(data);
+				//Al hacer click en algua de las sugerencias
+				$('.suggest-element').on('click', function(){
+						//Obtenemos la id unica de la sugerencia pulsada
+						var id = $(this).attr('id'); 
+						var nombre = $(this).attr('nombre')
+						//Editamos el valor del input con data de la sugerencia pulsada
+						$('#txtBuscar').val(nombre);
+						//Hacemos desaparecer el resto de sugerencias
+						$('#suggestions').fadeOut(1000);
+						return false;
+					});
 				
+			}
+		});
 
-					//Escribimos las sugerencias que nos manda la consulta
-					$('#suggestions').fadeIn(1000).html(data);
-					//Al hacer click en algua de las sugerencias
-					$('.suggest-element').on('click', function(){
-							//Obtenemos la id unica de la sugerencia pulsada
-							var id = $(this).attr('id'); 
-							var nombre = $(this).attr('nombre')
-							//Editamos el valor del input con data de la sugerencia pulsada
-							$('#txtBuscar').val(nombre);
-							//Hacemos desaparecer el resto de sugerencias
-							$('#suggestions').fadeOut(1000);
-							return false;
-						});
-					
-				}
-			});
-
-		}
-	});
-
-	//Evento Submit del buscador, hace un GET a la API y trae sólo los arboles que comiencen con el texto, en el nombre vulgar o científico
-	$('#frmBuscar').on('submit', function(e){
-
-		e.preventDefault()
-		
-		traeData('{{urlApi}}arbolitos/' + $('#txtBuscar').val());
-
-	})
+	}
+};
 
 
-
-function cargarMapa()
+function cargarMapa(k)
 {
 
-		
-	//Evento KeyUp del txt buscador pega un GET a la API y trae un array con los nombres científico y vulgar que comiencen con el texto
-	
+		var texto = $('#txtBuscar').val();
+		var rootUrl = '';
 
-	function traeData(rootUrl){
+		if(k === 1){
+			rootUrl = '{{urlApi}}arbolitos';
+		}
+		else{
+			rootUrl = '{{urlApi}}arbolitos/' + texto;
+		}
+
+		
 
 		var container = L.DomUtil.get('mapid');
 		if(container != null){
@@ -149,34 +147,7 @@ function cargarMapa()
 
 		mymap.addLayer(base);
 
-		/*
 		
-		mymap.on('moveend', function(e){
-
-			var bbox = mymap.getBounds();
-			
-			$.ajax(
-				{'url': '{{urlApi}}arbolitos/bbox',
-				'type': 'POST',
-				'data': {
-				'NE': [bbox._northEast.lng,bbox._northEast.lat],
-				'SO': [bbox._southWest.lng,bbox._southWest.lat]},
-				'dataType': 'json',
-				'success': function(data){
-
-					console.log(data);
-
-				}
-
-			})
-
-		})
-
-		*/
-
-		
-
-
 		var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
 
 		mymap.addLayer(cluster);
@@ -266,27 +237,19 @@ function cargarMapa()
 			}
 				
 			});
-		}
-
-		traeData('{{urlApi}}arbolitos');
-
-	
-
-
 }
 
 </script>
 </head>
-<body onload="cargarMapa();">			
-	
+<body onload="cargarMapa(1);">				
        
 		
 		<div class="buscador">
 			<form id="frmBuscar" class="form-inline" method="post">
 				<div id="formulario" class="input-group input-group-sm">
-					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off">
+					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias(); />
 					<span class="input-group-btn">
-						<button id="btnBuscar" type="submit" class="btn btn-info btn-flat"><i class="fa fa-search"></i></button>
+						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=cargarMapa(2);><i class="fa fa-search"></i></button>
 						<button id="btnBorrar" type="button" class="btn btn-info btn-flat" onclick=limpiarSugerencias();><i class="fa fa-trash"></i></button>
 					</span>
     			</div>
