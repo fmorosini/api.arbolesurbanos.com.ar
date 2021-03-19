@@ -63,7 +63,15 @@ function invertir(arreglo){
 function limpiarSugerencias(){
 	$('#suggestions').empty();
 	$('#txtBuscar').val('');
-	cargarMapa(1);
+	
+	window.location.href = '/'
+}
+
+function submitForm(){
+
+    var nombre = $("#txtBuscar").val();
+
+	window.location.href = '/?nombre=' + nombre
 }
 
 function traeSugerencias() {
@@ -103,27 +111,25 @@ function traeSugerencias() {
 };
 
 
-function cargarMapa(k)
+function cargarMapa()
 {
+		var urlParams = new URLSearchParams(window.location.search);
+		var nombre = urlParams.get('nombre');
 
-		var texto = $('#txtBuscar').val();
-		var rootUrl = '';
-
-		if(k === 1){
-			rootUrl = '{{urlApi}}arbolitos';
+		if(!nombre)
+		{
+			nombre = ''
 		}
-		else{
-			rootUrl = '{{urlApi}}arbolitos/' + texto;
-		}
-
-		
 
 		var container = L.DomUtil.get('mapid');
 		if(container != null){
 		container._leaflet_id = null;
 		}
+		var rootUrl = '';
 
+		rootUrl = '{{urlApi}}arbolitos/' + nombre; 
 
+		$('#txtBuscar').val(nombre)
 
 		var mymap = L.map('mapid', {
 			center: [-40.65, -71.3498],
@@ -142,10 +148,12 @@ function cargarMapa(k)
 			}
 			);
 							  
-							 
+			 
 		
 
 		mymap.addLayer(base);
+
+		
 
 		
 		var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
@@ -235,13 +243,15 @@ function cargarMapa(k)
 				m.addTo(cluster)
 
 			}
+
+				
 				
 			});
 }
 
 </script>
 </head>
-<body onload="cargarMapa(1);">				
+<body onload="cargarMapa();">				
        
 		
 		<div class="buscador">
@@ -249,7 +259,7 @@ function cargarMapa(k)
 				<div id="formulario" class="input-group input-group-sm">
 					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias(); />
 					<span class="input-group-btn">
-						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=cargarMapa(2);><i class="fa fa-search"></i></button>
+						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=submitForm();><i class="fa fa-search"></i></button>
 						<button id="btnBorrar" type="button" class="btn btn-info btn-flat" onclick=limpiarSugerencias();><i class="fa fa-trash"></i></button>
 					</span>
     			</div>

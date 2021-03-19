@@ -142,21 +142,28 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
 })
 
 app.post('/arbolitos/bbox/', (req,res) => {
+//
+    let nombre = req.query.nombre.toUpperCase()
 
-        
     let bbox = req.body
 
     //console.log(bbox)
    
     
-    let x1 = bbox['NE[]'][0]
-    let y1 = bbox['NE[]'][1]
-    let x2 = bbox['SO[]'][0]
-    let y2 = bbox['SO[]'][1]   
+    let x1 = bbox['NE'][0]
+    let y1 = bbox['NE'][1]
+    let x2 = bbox['SO'][0]
+    let y2 = bbox['SO'][1]   
     
+    let sql = `select nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
     
+    if(nombre){
+
+        sql += ` and (upper(nombrecientifico) like '${nombre}%' or upper(nombrevulgar) like '${nombre}%')`
+
+    }
     
-    base.result(`select nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`)
+    base.result(sql)
     .then(data => {
 
         //res.send(toGeoJSON(data))
