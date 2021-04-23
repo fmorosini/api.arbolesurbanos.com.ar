@@ -32,7 +32,10 @@
 			width: 33%;
 		}
 		.suggest-element{
-			color: black;
+			color: rgb(60, 60, 60, 1);		
+		}
+		.centrado{
+			padding: 0 auto;
 		}
         </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
@@ -110,65 +113,11 @@ function traeSugerencias() {
 	}
 };
 
+function cargarDatosEnMapa(data,cluster){
 
-function cargarMapa()
-{
-		var urlParams = new URLSearchParams(window.location.search);
-		var nombre = urlParams.get('nombre');
+	localStorage.setItem('data', JSON.stringify(data));
 
-		if(!nombre)
-		{
-			nombre = ''
-		}
-
-		var container = L.DomUtil.get('mapid');
-		if(container != null){
-		container._leaflet_id = null;
-		}
-		var rootUrl = '';
-
-		rootUrl = '{{urlApi}}arbolitos/' + nombre; 
-
-		$('#txtBuscar').val(nombre)
-
-		var mymap = L.map('mapid', {
-			center: [-40.65, -71.3498],
-			zoom: 4
-			});
-
-		
-		var base = new L.TileLayer.WMTS( "https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts" ,
-			{
-				layer: "capabaseargenmap",
-				style: "normal",
-				tilematrixSet: "EPSG:3857",
-				format: "image/png",
-				maxZoom: 21,
-				attribution: "<a href='https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts?REQUEST=GetCapabilities'>WMTS IGN</a>"
-			}
-			);
-							  
-			 
-		
-
-		mymap.addLayer(base);
-
-		
-
-		
-		var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
-
-		mymap.addLayer(cluster);
-
-
-		L.control.locate().addTo(mymap);
-
-
-			$.get(rootUrl, function(data) {
-
-			//console.log(data.features)
-			
-			for(var i = 0; i < data.features.length; i++){
+	for(var i = 0; i < data.features.length; i++){
 			
 				
 
@@ -242,18 +191,118 @@ function cargarMapa()
 				m.bindPopup(popup);
 				m.addTo(cluster)
 
+				
+
 			}
 
-				
-				
+			
+
+}
+
+
+function cargarMapa()
+{
+		
+		
+		var urlParams = new URLSearchParams(window.location.search);
+		var nombre = urlParams.get('nombre');
+
+		if(!nombre)
+		{
+			nombre = ''
+		}
+
+		var container = L.DomUtil.get('mapid');
+		if(container != null){
+		container._leaflet_id = null;
+		}
+		var rootUrl = '';
+
+		rootUrl = '{{urlApi}}arbolitos/' + nombre; 
+
+		$('#txtBuscar').val(nombre)
+
+		var mymap = L.map('mapid', {
+			center: [-40.65, -71.3498],
+			zoom: 4
 			});
+
+		
+		var base = new L.TileLayer.WMTS( "https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts" ,
+			{
+				layer: "capabaseargenmap",
+				style: "normal",
+				tilematrixSet: "EPSG:3857",
+				format: "image/png",
+				maxZoom: 21,
+				attribution: "<a href='https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts?REQUEST=GetCapabilities'>WMTS IGN</a>"
+			}
+			);
+							  
+			 
+		
+
+		mymap.addLayer(base);
+
+		
+
+		
+		var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
+
+		mymap.addLayer(cluster);
+
+
+		L.control.locate().addTo(mymap);
+
+		$('#modalCarga').modal('show')
+
+		if(localStorage.getItem('data')){
+
+			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),cluster)
+
+			console.log('usa data del storage')
+		}
+		else{
+
+			$.get(rootUrl, function(data) {
+
+			cargarDatosEnMapa(data,cluster);
+
+			console.log('trae data del server')
+			
+		});
+
+		}
+
+		
+
+		$('#modalCarga').modal('hide')
 }
 
 </script>
 </head>
 <body onload="cargarMapa();">				
        
-		
+		<div class="modal fade" id="modalCarga" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+			
+			<div class="modal-body">
+				<div class='container-fuid'>
+					<div class='row'>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<img src='/img/preloader.gif' />
+							</div>
+							<div class="col-md-4"></div>
+					</div>
+				</div>
+			</div>
+			
+			</div>
+		</div>
+		</div>
+
 		<div class="buscador">
 			<form id="frmBuscar" class="form-inline" method="post">
 				<div id="formulario" class="input-group input-group-sm">
