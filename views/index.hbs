@@ -115,6 +115,8 @@ function traeSugerencias() {
 
 function cargarDatosEnMapa(data,cluster){
 
+	$('#modalCarga').modal('show')
+
 	localStorage.setItem('data', JSON.stringify(data));
 
 	for(var i = 0; i < data.features.length; i++){
@@ -195,7 +197,7 @@ function cargarDatosEnMapa(data,cluster){
 
 			}
 
-			
+			$('#modalCarga').modal('hide')
 
 }
 
@@ -254,7 +256,7 @@ function cargarMapa()
 
 		L.control.locate().addTo(mymap);
 
-		$('#modalCarga').modal('show')
+		
 
 		if(localStorage.getItem('data')){
 
@@ -276,7 +278,7 @@ function cargarMapa()
 
 		
 
-		$('#modalCarga').modal('hide')
+		
 }
 
 </script>
