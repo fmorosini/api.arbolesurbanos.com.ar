@@ -115,7 +115,7 @@ function traeSugerencias() {
 
 function cargarDatosEnMapa(data,cluster){
 
-	$('#modalCarga').modal('show')
+	
 
 	localStorage.setItem('data', JSON.stringify(data));
 
@@ -205,6 +205,7 @@ function cargarDatosEnMapa(data,cluster){
 function cargarMapa()
 {
 		
+		$('#modalCarga').modal('show')
 		
 		var urlParams = new URLSearchParams(window.location.search);
 		var nombre = urlParams.get('nombre');
