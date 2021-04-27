@@ -61,7 +61,7 @@ app.get('/nombres/:buscar', (req,res) => {
 
         data.rows.forEach(item => {
 
-            nombres += `<div><a class='suggest-element' nombre='${item.nombre}' id='arbol.${i}'>${item.nombre}</a></div>`
+            nombres += `<div><a class='suggest-element' nombre='${item.nombre}' id='arbol.${i}'><strong>${item.nombre}</strong></a></div>`
             i++
             
         });
@@ -76,7 +76,7 @@ app.get('/nombres/:buscar', (req,res) => {
 
 app.get('/arbolitos', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
      
     base.any(sql)
     
@@ -93,7 +93,7 @@ app.get('/arbolitos', (req,res) => {
 
 app.get('/arbolitos/:nombre', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
 
     let nombre = req.params.nombre.toUpperCase()
 
@@ -115,7 +115,7 @@ app.get('/arbolitos/:nombre', (req,res) => {
 
 app.get('/arbolitos/localidades/:localidad', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
 
     let localidad = req.params.localidad.toUpperCase()
 
@@ -155,7 +155,7 @@ app.post('/arbolitos/bbox/', (req,res) => {
     let x2 = bbox['SO'][0]
     let y2 = bbox['SO'][1]   
     
-    let sql = `select nombrecientifico,nombrevulgar,imagen,thumbnail,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
+    let sql = `select nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
     
     if(nombre){
 

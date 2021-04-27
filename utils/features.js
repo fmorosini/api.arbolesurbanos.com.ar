@@ -35,7 +35,7 @@ const toGeoJSON = (data) => {
 
     class properties {
 
-        constructor(nombrevulgar, nombrecientifico, tipo, follaje, magnitud, imagen, thumbnail) {
+        constructor(nombrevulgar, nombrecientifico, tipo, follaje, magnitud, imagen, thumbnail, url_ficha) {
 
             this.nombrevulgar = nombrevulgar
             this.nombrecientifico = nombrecientifico
@@ -44,6 +44,7 @@ const toGeoJSON = (data) => {
             this.follaje = follaje
             this.imagen = imagen
             this.thumbnail = thumbnail
+            this.url_ficha = url_ficha
 
         }
     }
@@ -53,7 +54,7 @@ const toGeoJSON = (data) => {
     data.forEach(arbol => {
 
         let geometria = new geometry(arbol.posicion.coordinates)
-        let propiedades = new properties(arbol.nombrevulgar,arbol.nombrecientifico,arbol.tipo,arbol.follaje,arbol.magnitud,arbol.imagen,arbol.thumbnail)
+        let propiedades = new properties(arbol.nombrevulgar,arbol.nombrecientifico,arbol.tipo,arbol.follaje,arbol.magnitud,arbol.imagen,arbol.thumbnail,arbol.url_ficha)
         let fichur = new feature(geometria,propiedades)
 
         fichures.features.push(fichur)

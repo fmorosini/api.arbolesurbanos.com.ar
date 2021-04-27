@@ -32,10 +32,12 @@
 			width: 33%;
 		}
 		.suggest-element{
-			color: rgb(60, 60, 60, 1);		
+			color: rgb(60, 60, 60, 1);				
 		}
 		.centrado{
-			padding: 0 auto;
+			margin-left: auto;
+			margin-right: auto;
+			display: block;
 		}
         </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
@@ -53,7 +55,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="js/leaflet-tilelayer-wmts.js"></script>
+
 <script type="application/javascript">
+
+{
+
+	var mymap;
+
+}
 
 function invertir(arreglo){
 	var arreglo_invertido = [];
@@ -68,18 +77,34 @@ function limpiarSugerencias(){
 	$('#txtBuscar').val('');
 	
 	window.location.href = '/'
+
+	localStorage.clear();
+
+	inicio();
 }
 
-function submitForm(){
+function buscar(){    
+	
+	var nombre = $("#txtBuscar").val();	
 
-    var nombre = $("#txtBuscar").val();
+	if(localStorage.getItem('nombre') != nombre){
 
-	window.location.href = '/?nombre=' + nombre
+		localStorage.removeItem('data')
+
+	}
+
+	localStorage.setItem('nombre',nombre)
+
+	$('#txtBuscar').val(nombre)
+
+	inicio();
+
+	
 }
 
 function traeSugerencias() {
+
 	var nombre = $('#txtBuscar').val();
-	//console.log(nombre);
 
 	if(nombre == ''){
 		$('#suggestions').empty();
@@ -113,11 +138,22 @@ function traeSugerencias() {
 	}
 };
 
-function cargarDatosEnMapa(data,cluster){
+function guardaBBOX(center,zoom){
+
+	localStorage.setItem('center',JSON.stringify(center))
+	localStorage.setItem('zoom',zoom)
+
+}
+
+
+function cargarDatosEnMapa(data,center,zoom,cluster,map){
 
 	
+	
+	var centro = L.latLng(center[0],center[1]);
 
-	localStorage.setItem('data', JSON.stringify(data));
+	map.setView(centro,zoom)
+	
 
 	for(var i = 0; i < data.features.length; i++){
 			
@@ -173,7 +209,7 @@ function cargarDatosEnMapa(data,cluster){
 				var html_popup = "<div class='card'>";
 				
 				
-				html_popup += " <div class='card-header'><center><image  class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + "></image></center></div>";
+				html_popup += " <div class='card-header'><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid centrado' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></div>";
 				
 				
 				html_popup += " <div class='card-body'>";
@@ -202,89 +238,113 @@ function cargarDatosEnMapa(data,cluster){
 }
 
 
-function cargarMapa()
-{
+
+function inicio(){
 		
-		$('#modalCarga').modal('show')
-		
-		var urlParams = new URLSearchParams(window.location.search);
-		var nombre = urlParams.get('nombre');
+	var container = L.DomUtil.get('mapid');
+	if(container != null){
+	container._leaflet_id = null;
+	}		
 
-		if(!nombre)
-		{
-			nombre = ''
-		}
-
-		var container = L.DomUtil.get('mapid');
-		if(container != null){
-		container._leaflet_id = null;
-		}
-		var rootUrl = '';
-
-		rootUrl = '{{urlApi}}arbolitos/' + nombre; 
-
-		$('#txtBuscar').val(nombre)
-
-		var mymap = L.map('mapid', {
-			center: [-40.65, -71.3498],
-			zoom: 4
-			});
-
-		
-		var base = new L.TileLayer.WMTS( "https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts" ,
-			{
-				layer: "capabaseargenmap",
-				style: "normal",
-				tilematrixSet: "EPSG:3857",
-				format: "image/png",
-				maxZoom: 21,
-				attribution: "<a href='https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts?REQUEST=GetCapabilities'>WMTS IGN</a>"
-			}
-			);
-							  
-			 
-		
-
-		mymap.addLayer(base);
-
-		
-
-		
-		var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
-
-		mymap.addLayer(cluster);
-
-
-		L.control.locate().addTo(mymap);
-
-		
-
-		if(localStorage.getItem('data')){
-
-			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),cluster)
-
-			console.log('usa data del storage')
-		}
-		else{
-
-			$.get(rootUrl, function(data) {
-
-			cargarDatosEnMapa(data,cluster);
-
-			console.log('trae data del server')
-			
+	mymap = L.map('mapid', {
+		center: [-40.65, -71.3498],
+		zoom: 4
 		});
 
+	mymap.on('zoomend',function(){
+
+		var centro = new Array()
+
+		centro[0] = mymap.getCenter().lat
+		centro[1] = mymap.getCenter().lng
+		
+		guardaBBOX(centro,mymap.getZoom())
+
+	})
+
+	mymap.on('moveend',function(){
+
+		var centro = new Array()
+
+		centro[0] = mymap.getCenter().lat
+		centro[1] = mymap.getCenter().lng
+
+		guardaBBOX(centro,mymap.getZoom())
+
+	})
+
+	
+		
+	var base = new L.TileLayer.WMTS( "https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts" ,
+		{
+			layer: "capabaseargenmap",
+			style: "normal",
+			tilematrixSet: "EPSG:3857",
+			format: "image/png",
+			maxZoom: 21,
+			attribution: "<a href='https://wms.ign.gob.ar/geoserver/capabaseargenmap/gwc/service/wmts?REQUEST=GetCapabilities'>WMTS IGN</a>"
 		}
+	);						  
+			
+	
+
+	mymap.addLayer(base);
+
+	
+	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
+	
+	mymap.addLayer(cluster);
+
+	L.control.locate().addTo(mymap);
+
+	if(localStorage.getItem('center') == null){
+
+		var centro = new Array()
+
+		centro[0] = mymap.getCenter().lat
+		centro[1] = mymap.getCenter().lng
+
+		guardaBBOX(centro,mymap.getZoom())
+
+	}	
+
+	$('#txtBuscar').val(localStorage.getItem('nombre'))
+	
+	if(localStorage.getItem('data') == null){
+
+		console.log('aca')
+
+		var rootUrl = '{{urlApi}}arbolitos' + (localStorage.getItem('nombre') ? '/' + localStorage.getItem('nombre') : '' );
 
 		
+		console.log(rootUrl)
+
+
+		$.get(rootUrl, function(data) {
+
+            localStorage.setItem('data',JSON.stringify(data))
+
+			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
+
+		});
+
+	}
+	else{
+
+		cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
+
+	}
+
+	
+
+	
 
 		
 }
 
 </script>
 </head>
-<body onload="cargarMapa();">				
+<body onload="inicio();">				
        
 		<div class="modal fade" id="modalCarga" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -295,7 +355,7 @@ function cargarMapa()
 					<div class='row'>
 							<div class="col-md-4"></div>
 							<div class="col-md-4">
-								<img src='/img/preloader.gif' />
+								<img class="centrado" src='/img/preloader.gif' />
 							</div>
 							<div class="col-md-4"></div>
 					</div>
@@ -311,7 +371,7 @@ function cargarMapa()
 				<div id="formulario" class="input-group input-group-sm">
 					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias(); />
 					<span class="input-group-btn">
-						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=submitForm();><i class="fa fa-search"></i></button>
+						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=buscar();><i class="fa fa-search"></i></button>
 						<button id="btnBorrar" type="button" class="btn btn-info btn-flat" onclick=limpiarSugerencias();><i class="fa fa-trash"></i></button>
 					</span>
     			</div>
