@@ -35,9 +35,7 @@
 			color: rgb(60, 60, 60, 1);				
 		}
 		.centrado{
-			margin-left: auto;
-			margin-right: auto;
-			display: block;
+			text-align: center;
 		}
         </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
@@ -130,7 +128,7 @@ function traeSugerencias() {
 						$('#txtBuscar').val(nombre);
 						//Hacemos desaparecer el resto de sugerencias
 						$('#suggestions').fadeOut(1000);
-						return false;
+						buscar();
 					});
 				
 			}
@@ -165,7 +163,7 @@ function cargarDatosEnMapa(data,center,zoom,cluster,map){
 
 				//iconSize:     [80, 80], // size of the icon
 				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+				iconAnchor:   [40, 0] // point of the icon which will correspond to marker's location
 				//shadowAnchor: [4, 62],  // the same for the shadow
 				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 				});
@@ -175,7 +173,7 @@ function cargarDatosEnMapa(data,center,zoom,cluster,map){
 
 				//iconSize:     [60, 60], // size of the icon
 				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+				iconAnchor:   [30, 0] // point of the icon which will correspond to marker's location
 				//shadowAnchor: [4, 62],  // the same for the shadow
 				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 				});
@@ -185,7 +183,7 @@ function cargarDatosEnMapa(data,center,zoom,cluster,map){
 
 				//iconSize:     [40, 40], // size of the icon
 				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [22, 21] // point of the icon which will correspond to marker's location
+				iconAnchor:   [20, 0] // point of the icon which will correspond to marker's location
 				//shadowAnchor: [4, 62],  // the same for the shadow
 				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 				});
@@ -322,6 +320,8 @@ function inicio(){
 	}	
 
 	$('#txtBuscar').val(localStorage.getItem('nombre'))
+
+	$('#modalCarga').modal('show')
 	
 	if(localStorage.getItem('data') == null){
 
@@ -355,9 +355,9 @@ function inicio(){
 <body onload="inicio();">				
        
 		<div class="modal fade" id="modalCarga" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-dialog modal-dialog-center">
 			<div class="modal-content">
-			
+			<div class='modal-header'><h3 class="centrado">Cargando...</h3></div>
 			<div class="modal-body">
 				<div class='container-fuid'>
 					<div class='row'>
