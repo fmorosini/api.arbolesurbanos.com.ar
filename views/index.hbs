@@ -208,11 +208,11 @@ function cargarDatosEnMapa(data,center,zoom,cluster,map){
 				var html_popup = "<div class='card'>";
 				
 				
-				html_popup += " <div class='card-header'><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid centrado' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></div>";
+				html_popup += " <div class='card-header'><center><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></center></div>";
 				
 				
 				html_popup += " <div class='card-body'>";
-				html_popup += "       <p><h5><strong>" + data.features[i].properties.nombrevulgar + "</strong></h5>";
+				html_popup += "       <p><h5><center><strong>" + data.features[i].properties.nombrevulgar + "</strong></center></h5>";
 				html_popup += "         <hr />";
 				html_popup += "         <h5><strong>Nombre científico:</strong> " + data.features[i].properties.nombrecientifico + "</h5>";
 				html_popup += "         <h5><strong>Tipo:</strong> " + data.features[i].properties.tipo + "</h5>";
