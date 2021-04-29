@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="js/leaflet.css" />
     <style>
         html,body {
-              padding: 0px 20px 0px 20px;
+              padding: 0;
             margin: 0;
         }
         #mapid {
@@ -149,15 +149,6 @@ function borratxt(){
 
 }
 
-function restablecetxt(){
-
-	var valor = localStorage.getItem('nombre')
-
-	console.log(' valor ' + valor)
-
-	$('#txtBuscar').val(valor)
-
-}
 
 
 function cargarDatosEnMapa(data,center,zoom,cluster,map){
@@ -392,7 +383,7 @@ function inicio(){
 		<div class="buscador">
 			<form id="frmBuscar" class="form-inline" method="post">
 				<div id="formulario" class="input-group input-group-sm">
-					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias() onfocus=borratxt() onblur=restablecetxt() />
+					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias() onfocus=borratxt() />
 					<span class="input-group-btn">
 						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=buscar();><i class="fa fa-search"></i></button>
 						<button id="btnBorrar" type="button" class="btn btn-info btn-flat" onclick=limpiarSugerencias();><i class="fa fa-trash"></i></button>
