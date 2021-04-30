@@ -76,7 +76,7 @@ function limpiarSugerencias(){
 	
 	window.location.href = '/'
 
-	localStorage.clear();
+	localStorage.removeItem('nombre')
 
 	window.location.reload();
 }
@@ -85,11 +85,15 @@ function buscar(){
 	
 	var nombre = $("#txtBuscar").val();	
 
+	/*
+
 	if(localStorage.getItem('nombre') != nombre){
 
 		localStorage.removeItem('data')
 
 	}
+
+	*/
 
 	localStorage.setItem('nombre',nombre)
 
@@ -152,7 +156,6 @@ function borratxt(){
 
 
 function cargarDatosEnMapa(data,center,zoom,cluster,map){
-
 	
 	
 	var centro = L.latLng(center[0],center[1]);
@@ -328,15 +331,16 @@ function inicio(){
 	$('#txtBuscar').val(localStorage.getItem('nombre'))
 
 	$('#modalCarga').modal('show')
+
+	var rootUrl = '{{urlApi}}arbolitos';
 	
 	if(localStorage.getItem('data') == null){
 
-		
-		var rootUrl = '{{urlApi}}arbolitos' + (localStorage.getItem('nombre') ? '/' + localStorage.getItem('nombre') : '' );
+		//Si no hay data carga todo del server		
 
 		$.get(rootUrl, function(data) {
 
-            localStorage.setItem('data',JSON.stringify(data))
+            localStorage.setItem('data',JSON.stringify(data)) //Guarda la data en el Storage
 
 			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
 
@@ -345,7 +349,69 @@ function inicio(){
 	}
 	else{
 
-		cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
+		if(localStorage.getItem('fechaData')){
+
+			var fechaData = new Date(localStorage.getItem('fechaData'))
+
+			var ya = new Date()
+
+			if(ya - fechaData > 2592000000){ //Si hay data pero la data es mayor a 30 dias (30*24*60*60*1000 milisegundos) vuelve a cargar del server y actualiza data
+
+				localStorage.removeItem('data')
+
+				localStorage.setItem('fechaData', new Date())
+
+				$.get(rootUrl, function(data) {
+					
+					localStorage.setItem('data',JSON.stringify(data)) //Guarda la data en el Storage	
+
+					cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)			
+
+					
+
+				});
+
+			}
+
+		}
+		else{
+
+			localStorage.setItem('fechaData', new Date())
+
+		}
+
+		if(localStorage.getItem('nombre')){
+
+			//filtra
+
+			var data = JSON.parse(localStorage.getItem('data'))
+
+			var featuresData = new Array()
+			
+			featuresData = data.features
+
+			var nombre = localStorage.getItem('nombre')
+
+			var featuresDataFiltrada = featuresData.filter(function(feature){
+
+				return (feature.properties.nombrecientifico.toUpperCase().indexOf(nombre.toUpperCase()) == 0 || feature.properties.nombrevulgar.toUpperCase().indexOf(nombre.toUpperCase()) == 0)
+
+			})
+
+			var dataFiltrada = {"features": featuresDataFiltrada, "type": "FeatureCollection"}			
+
+			cargarDatosEnMapa(dataFiltrada,JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
+
+		}
+		else{
+
+			//carga toda la data
+
+			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
+
+		}
+		
+		
 
 	}
 
