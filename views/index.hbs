@@ -349,36 +349,7 @@ function inicio(){
 	}
 	else{
 
-		if(localStorage.getItem('fechaData')){
-
-			var fechaData = new Date(localStorage.getItem('fechaData'))
-
-			var ya = new Date()
-
-			if(ya - fechaData > 2592000000){ //Si hay data pero la data es mayor a 30 dias (30*24*60*60*1000 milisegundos) vuelve a cargar del server y actualiza data
-
-				localStorage.removeItem('data')
-
-				localStorage.setItem('fechaData', new Date())
-
-				$.get(rootUrl, function(data) {
-					
-					localStorage.setItem('data',JSON.stringify(data)) //Guarda la data en el Storage	
-
-					cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)			
-
-					
-
-				});
-
-			}
-
-		}
-		else{
-
-			localStorage.setItem('fechaData', new Date())
-
-		}
+		
 
 		if(localStorage.getItem('nombre')){
 
