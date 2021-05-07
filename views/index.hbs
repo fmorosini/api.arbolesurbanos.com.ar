@@ -73,33 +73,21 @@ function limpiarSugerencias(){
 	
 	$('#suggestions').empty();
 	$('#txtBuscar').val('');
-	
-	window.location.href = '/'
 
 	localStorage.removeItem('nombre')
-
-	window.location.reload();
+	
+	cargarDatosEnMapa();
 }
 
 function buscar(){   
 	
 	var nombre = $("#txtBuscar").val();	
 
-	/*
-
-	if(localStorage.getItem('nombre') != nombre){
-
-		localStorage.removeItem('data')
-
-	}
-
-	*/
-
 	localStorage.setItem('nombre',nombre)
 
 	$('#txtBuscar').val(nombre)
 
-	window.location.reload();
+	cargarDatosEnMapa();
 
 	
 }
@@ -155,93 +143,151 @@ function borratxt(){
 
 
 
-function cargarDatosEnMapa(data,center,zoom,cluster,map){
-	
-	
-	var centro = L.latLng(center[0],center[1]);
+function cargarDatosEnMapa(){
 
-	map.setView(centro,zoom)
+	mymap.eachLayer(function(l){if(l.options.layer != 'capabaseargenmap') mymap.removeLayer(l)}) //Borra todas las capas y marcadores menos la capa base
 	
+	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
+
+	var data;
+	
+	mymap.addLayer(cluster);
+
+	mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))
+	
+	
+
+	var rootUrl = '{{urlApi}}arbolitos';
+	
+	if(localStorage.getItem('data') == null){
+
+		//Si no hay data carga todo del server		
+
+		$.get(rootUrl, function(datosJSON) {
+
+            localStorage.setItem('data',JSON.stringify(datosJSON)) //Guarda la data en el Storage
+
+			data = JSON.stringify(datosJSON)
+
+		});
+
+	}
+	else{
+
+		
+
+		if(localStorage.getItem('nombre')){
+
+			//filtra
+
+			dataGuardada = JSON.parse(localStorage.getItem('data'))
+
+			var featuresData = new Array()
+			
+			featuresData = dataGuardada.features
+
+			var nombre = localStorage.getItem('nombre')
+
+			var featuresDataFiltrada = featuresData.filter(function(feature){
+
+				return (feature.properties.nombrecientifico.toUpperCase().indexOf(nombre.toUpperCase()) == 0 || feature.properties.nombrevulgar.toUpperCase().indexOf(nombre.toUpperCase()) == 0)
+
+			})
+
+			data = {"features": featuresDataFiltrada, "type": "FeatureCollection"}			
+
+			
+
+		}
+		else{
+
+			data = JSON.parse(localStorage.getItem('data'))
+
+		}
+	}
+		
+	
+
 
 	for(var i = 0; i < data.features.length; i++){
+		
 			
-				
 
-				var icono_arbol_1 = L.icon({
-				iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/1/' + data.features[i].properties.imagen,
+			var icono_arbol_1 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/1/' + data.features[i].properties.imagen,
 
-				//iconSize:     [80, 80], // size of the icon
-				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [40, 0] // point of the icon which will correspond to marker's location
-				//shadowAnchor: [4, 62],  // the same for the shadow
-				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-				});
+			//iconSize:     [80, 80], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [40, 0] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
 
-				var icono_arbol_2 = L.icon({
-				iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/2/' + data.features[i].properties.imagen,
+			var icono_arbol_2 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/2/' + data.features[i].properties.imagen,
 
-				//iconSize:     [60, 60], // size of the icon
-				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [30, 0] // point of the icon which will correspond to marker's location
-				//shadowAnchor: [4, 62],  // the same for the shadow
-				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-				});
+			//iconSize:     [60, 60], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [30, 0] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
 
-				var icono_arbol_3 = L.icon({
-				iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/3/' + data.features[i].properties.imagen,
+			var icono_arbol_3 = L.icon({
+			iconUrl: 'https://www.arbolesurbanos.com.ar/iconos/3/' + data.features[i].properties.imagen,
 
-				//iconSize:     [40, 40], // size of the icon
-				//shadowSize:   [50, 64], // size of the shadow
-				iconAnchor:   [20, 0] // point of the icon which will correspond to marker's location
-				//shadowAnchor: [4, 62],  // the same for the shadow
-				//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-				});
+			//iconSize:     [40, 40], // size of the icon
+			//shadowSize:   [50, 64], // size of the shadow
+			iconAnchor:   [20, 0] // point of the icon which will correspond to marker's location
+			//shadowAnchor: [4, 62],  // the same for the shadow
+			//popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+			});
 
-				var icono_arbol; //alert(feature.properties.magnitud);
+			var icono_arbol; //alert(feature.properties.magnitud);
 
-				if(data.features[i].properties.magnitud == 1)
-				{
-					icono_arbol = icono_arbol_1;
-				}
-				else if(data.features[i].properties.magnitud == 2)
-				{
-					icono_arbol = icono_arbol_2;
-				}
-				else if(data.features[i].properties.magnitud == 3)
-				{
-					icono_arbol = icono_arbol_3;
-				}
-
-				var m = new L.marker(invertir(data.features[i].geometry.coordinates), {icon: icono_arbol, title: data.features[i].properties.nombrevulgar});
-
-				var html_popup = "<div class='card'>";
-				
-				
-				html_popup += " <div class='card-header'><center><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></center></div>";
-				
-				
-				html_popup += " <div class='card-body'>";
-				html_popup += "       <p><h5><center><strong>" + data.features[i].properties.nombrevulgar + "</strong></center></h5>";
-				html_popup += "         <hr />";
-				html_popup += "         <h5><strong>Nombre científico:</strong> " + data.features[i].properties.nombrecientifico + "</h5>";
-				html_popup += "         <h5><strong>Tipo:</strong> " + data.features[i].properties.tipo + "</h5>";
-				html_popup += "         <h5><strong>Follaje:</strong> " + data.features[i].properties.follaje + "</h5>";
-				html_popup += "		  <h5><strong>Magnitud:</strong> " + data.features[i].properties.magnitud + "</h5>";
-				html_popup += "     </p>";
-				html_popup += "  </div>";
-				
-				html_popup += "</div>";
-
-				var popup = L.responsivePopup({ autoPanPadding: [10,10] }).setContent(html_popup);
-
-				m.bindPopup(popup);
-				m.addTo(cluster)
-
-				
-
+			if(data.features[i].properties.magnitud == 1)
+			{
+				icono_arbol = icono_arbol_1;
+			}
+			else if(data.features[i].properties.magnitud == 2)
+			{
+				icono_arbol = icono_arbol_2;
+			}
+			else if(data.features[i].properties.magnitud == 3)
+			{
+				icono_arbol = icono_arbol_3;
 			}
 
-			$('#modalCarga').modal('hide')
+			var m = new L.marker(invertir(data.features[i].geometry.coordinates), {icon: icono_arbol, title: data.features[i].properties.nombrevulgar});
+
+			var html_popup = "<div class='card'>";
+			
+			
+			html_popup += " <div class='card-header'><center><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></center></div>";
+			
+			
+			html_popup += " <div class='card-body'>";
+			html_popup += "       <p><h5><center><strong>" + data.features[i].properties.nombrevulgar + "</strong></center></h5>";
+			html_popup += "         <hr />";
+			html_popup += "         <h5><strong>Nombre científico:</strong> " + data.features[i].properties.nombrecientifico + "</h5>";
+			html_popup += "         <h5><strong>Tipo:</strong> " + data.features[i].properties.tipo + "</h5>";
+			html_popup += "         <h5><strong>Follaje:</strong> " + data.features[i].properties.follaje + "</h5>";
+			html_popup += "		  <h5><strong>Magnitud:</strong> " + data.features[i].properties.magnitud + "</h5>";
+			html_popup += "     </p>";
+			html_popup += "  </div>";
+			
+			html_popup += "</div>";
+
+			var popup = L.responsivePopup({ autoPanPadding: [10,10] }).setContent(html_popup);
+
+			m.bindPopup(popup);
+			m.addTo(cluster)
+
+			
+
+		}
+
+		$('#modalCarga').modal('hide')
 
 }
 
@@ -311,9 +357,7 @@ function inicio(){
 	mymap.addLayer(base);
 
 	
-	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
 	
-	mymap.addLayer(cluster);
 
 	L.control.locate().addTo(mymap);
 
@@ -332,66 +376,19 @@ function inicio(){
 
 	$('#modalCarga').modal('show')
 
-	var rootUrl = '{{urlApi}}arbolitos';
 	
-	if(localStorage.getItem('data') == null){
-
-		//Si no hay data carga todo del server		
-
-		$.get(rootUrl, function(data) {
-
-            localStorage.setItem('data',JSON.stringify(data)) //Guarda la data en el Storage
-
-			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
-
-		});
-
-	}
-	else{
-
-		
-
-		if(localStorage.getItem('nombre')){
-
-			//filtra
-
-			var data = JSON.parse(localStorage.getItem('data'))
-
-			var featuresData = new Array()
-			
-			featuresData = data.features
-
-			var nombre = localStorage.getItem('nombre')
-
-			var featuresDataFiltrada = featuresData.filter(function(feature){
-
-				return (feature.properties.nombrecientifico.toUpperCase().indexOf(nombre.toUpperCase()) == 0 || feature.properties.nombrevulgar.toUpperCase().indexOf(nombre.toUpperCase()) == 0)
-
-			})
-
-			var dataFiltrada = {"features": featuresDataFiltrada, "type": "FeatureCollection"}			
-
-			cargarDatosEnMapa(dataFiltrada,JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
-
-		}
-		else{
-
-			//carga toda la data
-
-			cargarDatosEnMapa(JSON.parse(localStorage.getItem('data')),JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'),cluster,mymap)
-
-		}
-		
-		
-
-	}
+	cargarDatosEnMapa();
 
 	
 
-	
-
-		
 }
+
+	
+
+	
+
+		
+
 
 </script>
 </head>
