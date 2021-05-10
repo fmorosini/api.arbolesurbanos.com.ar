@@ -282,8 +282,19 @@ function cargarDatosEnMapa(){
 
 			var html_popup = "<div class='card'>";
 			
+
+			if(data.features[i].properties.url_ficha !== "" ){
+
+				html_popup += " <div class='card-header'><center><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></center></div>";
+
+			}
+			else{
+
+				html_popup += " <div class='card-header'><center><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></center></div>";
+
+			}
 			
-			html_popup += " <div class='card-header'><center><a href=" + data.features[i].properties.url_ficha + " target='_self'><img class='img-fluid' style='max-width: 250px;' src=" + encodeURI("https://www.arbolesurbanos.com.ar/" + data.features[i].properties.thumbnail) + " /></a></center></div>";
+			
 			
 			
 			html_popup += " <div class='card-body'>";
