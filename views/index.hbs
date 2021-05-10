@@ -168,7 +168,7 @@ function cargarDatosEnMapa(){
 
             localStorage.setItem('data',JSON.stringify(datosJSON)) //Guarda la data en el Storage
 
-			data = JSON.stringify(datosJSON)
+			despliegaDatos(datosJSON,cluster)
 
 		});
 
@@ -189,7 +189,7 @@ function cargarDatosEnMapa(){
 
 				localStorage.setItem('data',JSON.stringify(datosJSON)) //Guarda la data en el Storage
 
-				data = JSON.stringify(datosJSON)
+				despliegaDatos(datosJSON,cluster)
 
 			});
 
@@ -216,19 +216,24 @@ function cargarDatosEnMapa(){
 
 			data = {"features": featuresDataFiltrada, "type": "FeatureCollection"}			
 
-			
+			despliegaDatos(data,cluster)
 
 		}
 		else{
 
 			data = JSON.parse(localStorage.getItem('data'))
 
+			despliegaDatos(data,cluster)
+
 		}
 	}
 		
-	
+	$('#modalCarga').modal('hide')
 
+}
 
+function despliegaDatos(data,cluster)
+{
 	for(var i = 0; i < data.features.length; i++){
 		
 			
@@ -317,9 +322,6 @@ function cargarDatosEnMapa(){
 			
 
 		}
-
-		$('#modalCarga').modal('hide')
-
 }
 
 
