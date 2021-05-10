@@ -203,11 +203,32 @@ app.get('/localidades', (req,res) => {
 
 app.get('/', (req,res) => {
 
-    let datos = {
-        urlApi: process.env.urlApi
-    }
-    
-    res.render('index',datos)
+    let sql = 'select count(*) as cantidad from arboles'
+
+    let cantidad = 0
+
+    base.result(sql) 
+
+    .then(data => {
+
+        data.rows.forEach(item => {
+
+            cantidad = item.cantidad
+            
+        });
+
+        let datos = {
+            arboles: cantidad,
+            urlApi: process.env.urlApi
+        }
+       
+        res.render('index',datos)
+
+    })
+
+
+
+   
 
 })
 

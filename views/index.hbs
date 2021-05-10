@@ -145,6 +145,8 @@ function borratxt(){
 
 function cargarDatosEnMapa(){
 
+	$('#modalCarga').modal('show')
+
 	mymap.eachLayer(function(l){if(l.options.layer != 'capabaseargenmap') mymap.removeLayer(l)}) //Borra todas las capas y marcadores menos la capa base
 	
 	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
@@ -154,7 +156,6 @@ function cargarDatosEnMapa(){
 	mymap.addLayer(cluster);
 
 	mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))
-	
 	
 
 	var rootUrl = '{{urlApi}}arbolitos';
@@ -174,6 +175,25 @@ function cargarDatosEnMapa(){
 	}
 	else{
 
+		var cantidad_enservidor = {{arboles}}
+		
+		var cantidad_enstorage = JSON.parse(localStorage.getItem('data')).features.length
+
+		if(cantidad_enservidor !== cantidad_enstorage){
+
+			console.log('carga todo, hubo cambios')
+
+			//la cantidad de árboles en servidor cambió con respecto a lo que hay en el storge, cargar todo de nuevo
+
+			$.get(rootUrl, function(datosJSON) {
+
+				localStorage.setItem('data',JSON.stringify(datosJSON)) //Guarda la data en el Storage
+
+				data = JSON.stringify(datosJSON)
+
+			});
+
+		}
 		
 
 		if(localStorage.getItem('nombre')){
@@ -374,7 +394,7 @@ function inicio(){
 
 	$('#txtBuscar').val(localStorage.getItem('nombre'))
 
-	$('#modalCarga').modal('show')
+	
 
 	
 	cargarDatosEnMapa();
