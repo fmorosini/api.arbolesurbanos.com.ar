@@ -162,7 +162,11 @@ function cargarDatosEnMapa(){
 	
 	if(localStorage.getItem('data') == null){
 
-		//Si no hay data carga todo del server		
+		//Si no hay data carga todo del server	y limpia parámetros
+
+		localStorage.clear()
+
+		$("#txtBuscar").val('')
 
 		$.get(rootUrl, function(datosJSON) {
 
@@ -189,7 +193,7 @@ function cargarDatosEnMapa(){
 
 				localStorage.setItem('data',JSON.stringify(datosJSON)) //Guarda la data en el Storage
 
-				despliegaDatos(datosJSON,cluster)
+				//despliegaDatos(datosJSON,cluster)
 
 			});
 
@@ -228,7 +232,7 @@ function cargarDatosEnMapa(){
 		}
 	}
 		
-	$('#modalCarga').modal('hide')
+	
 
 }
 
@@ -322,6 +326,8 @@ function despliegaDatos(data,cluster)
 			
 
 		}
+
+		$('#modalCarga').modal('hide')
 }
 
 
