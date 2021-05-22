@@ -52,6 +52,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="js/leaflet-tilelayer-wmts.js"></script>
+<link rel='stylesheet' href="js/leaflet-compass.min.css" />
+<script src="js/leaflet-compass.min.js"></script>
 
 <script type="application/javascript">
 
@@ -409,6 +411,8 @@ function inicio(){
 			enableHighAccuracy: true}
 
 	}).addTo(mymap);
+
+	mymap.addControl( new L.Control.Compass() );
 
 	if(localStorage.getItem('center') == null){
 
