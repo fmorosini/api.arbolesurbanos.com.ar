@@ -401,10 +401,12 @@ function inicio(){
 	
 
 	L.control.locate({
-		showCompass: true,
-		drawCircle: true,
-		drawMarker: true,
-		setView: 'untilPanOrZoom'
+		locateOptions: {
+			showCompass: true,
+			drawCircle: true,
+			drawMarker: true,
+			setView: 'untilPanOrZoom',
+			enableHighAccuracy: true}
 
 	}).addTo(mymap);
 
