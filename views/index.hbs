@@ -159,7 +159,8 @@ function cargarDatosEnMapa(){
 	
 	mymap.addLayer(cluster);
 
-	mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))
+	if(localStorage.getItem('center') != null){
+		mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))}
 	
 
 	var rootUrl = '{{urlApi}}arbolitos';
