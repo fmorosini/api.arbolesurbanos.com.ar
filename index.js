@@ -192,7 +192,7 @@ app.get('/especies', (req,res) => {
 
 app.get('/localidades', (req,res) => {
 
-    base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by nombre')
+    base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by ogc_fid')
     .then(data => {
 
         res.send(data)
