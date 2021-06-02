@@ -149,19 +149,7 @@ function borratxt(){
 
 function cargarDatosEnMapa(){
 
-	var querystring = window.location.search
-
-	var params = new URLSearchParams(querystring)
-
-	var localidad = params.get('localidad')
-
-	var localidades = [];
-
-	if(localStorage.getItem('localidades')){
-
-		localidades = JSON.parse(localStorage.getItem('localidades'));			
-
-	} 
+	
 
 
 	$('#modalCarga').modal('show')
@@ -170,87 +158,15 @@ function cargarDatosEnMapa(){
 	
 	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
 
+	console.log('mymap al cargar mapa: ', mymap)	
+
 	var data;
 	
 	mymap.addLayer(cluster);
 
-	L.control.locate({
-		locateOptions: {
-			showCompass: true,
-			drawCircle: true,
-			drawMarker: true,
-			setView: 'untilPanOrZoom',
-			enableHighAccuracy: true}
-
-	}).addTo(mymap);
-
-	var centro;
-	var zoom;
-
-
-	if(localidad && localidades.length > 0){
-
-		switch(localidad){
-
-			case 'T':
-
-				centro = [-70.58715820312501,-40.29209669470103];
-				zoom = 7;
-
-				break;
-			
-			case '0': 				
-
-				centro = localidades[0].posicion.coordinates;
-				zoom = localidades[0].zoom;				
-
-				break;
-
-			case '1': 
-			
-				centro = localidades[1].posicion.coordinates;
-				zoom = localidades[1].zoom;
-
-				break;
-
-			case '2': 
-			
-				centro = localidades[2].posicion.coordinates;
-				zoom = localidades[2].zoom;
-
-				break;
-
-			case '3': 
-			
-				centro = localidades[3].posicion.coordinates;
-				zoom = localidades[3].zoom;
-
-				break;
-
-			case '4': 
-			
-				centro = localidades[4].posicion.coordinates;
-				zoom = localidades[4].zoom;
-
-				break;
-
-		}
-
-		mymap.setView(invertir(centro),zoom)
-
-		localStorage.setItem('zoom',zoom)
-		localStorage.setItem('center',JSON.stringify(invertir(centro)))
-
-		window.location.search = '' // Borra el querystring, sólo lo usa para guardar en localStorage al cargar la página con el parámetro localidad
-								  // Después de eso manda el storage con el zoom/center dle usuario
-
-	}
-	else{
-	
-		if(localStorage.getItem('center') != null){
+	if(localStorage.getItem('center') != null){
 			mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))}
-	}
-
+	
 	var rootUrl = '{{urlApi}}arbolitos';
 	
 	if(localStorage.getItem('data') == null){
@@ -507,9 +423,18 @@ function inicio(){
 	
 
 	mymap.addLayer(base);
-	
 
-	if(localStorage.getItem('center') == null){
+	L.control.locate({
+		locateOptions: {
+			showCompass: true,
+			drawCircle: true,
+			drawMarker: true,
+			setView: 'untilPanOrZoom',
+			enableHighAccuracy: true}
+
+	}).addTo(mymap);
+
+	if(!localStorage.getItem('center')){
 
 		var centro = new Array()
 
@@ -537,13 +462,7 @@ function inicio(){
 
 	
 
-}
-
-	
-
-	
-
-		
+}	
 
 
 </script>
