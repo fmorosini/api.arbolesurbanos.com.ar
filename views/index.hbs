@@ -161,22 +161,30 @@ function cargarDatosEnMapa(){
 	var data;
 	
 	mymap.addLayer(cluster);
-	
-	if(document.getElementsByClassName('leaflet-control-locate').length == 0){
 		
 		L.control.locate({
 			locateOptions: {
 				showCompass: true,
 				drawCircle: true,
 				drawMarker: true,
-				setView: 'untilPanOrZoom',
 				enableHighAccuracy: true
 			},
 			strings: {
 				title: "Usted está aquí!"}
 			
 		}).addTo(mymap);
+
+	var contenedor = document.getElementsByClassName('leaflet-top leaflet-left')[0]
+
+	var controles = document.getElementsByClassName('leaflet-control-locate')
+
+
+	if(controles.length > 1){
+
+		contenedor.removeChild(controles[1])
+
 	}
+	
 
 	if(localStorage.getItem('center') != null){
 			mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))}
