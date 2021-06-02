@@ -162,6 +162,21 @@ function cargarDatosEnMapa(){
 	
 	mymap.addLayer(cluster);
 	
+	if(document.getElementsByClassName('leaflet-control-locate').length == 0){
+		
+		L.control.locate({
+			locateOptions: {
+				showCompass: true,
+				drawCircle: true,
+				drawMarker: true,
+				setView: 'untilPanOrZoom',
+				enableHighAccuracy: true
+			},
+			strings: {
+				title: "Usted está aquí!"}
+			
+		}).addTo(mymap);
+	}
 
 	if(localStorage.getItem('center') != null){
 			mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))}
@@ -423,21 +438,6 @@ function inicio(){
 
 	mymap.addLayer(base);
 
-	L.control.locate({
-		locateOptions: {
-			showCompass: true,
-			drawCircle: true,
-			drawMarker: true,
-			setView: 'untilPanOrZoom',
-			enableHighAccuracy: true
-		},
-		strings: {
-        	title: "Usted está aquí!"
-   		 },
-		layer: base
-	}).addTo(mymap);
-
-
 	if(!localStorage.getItem('center')){
 
 		var centro = new Array()
@@ -463,7 +463,7 @@ function inicio(){
 	}
 	else{
 
-
+		cargarDatosEnMapa();
 	}
 
 	
