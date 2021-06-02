@@ -78,7 +78,7 @@ function limpiarSugerencias(){
 
 	localStorage.removeItem('nombre')
 	
-	cargarDatosEnMapa();
+	cargarDatosEnMapa(false);
 }
 
 function buscar(){   
@@ -91,7 +91,7 @@ function buscar(){
 
 	$('#suggestions').fadeOut(1000);
 
-	cargarDatosEnMapa();
+	cargarDatosEnMapa(false);
 
 	
 }
@@ -147,7 +147,7 @@ function borratxt(){
 
 
 
-function cargarDatosEnMapa(){
+function cargarDatosEnMapa(controlLocate){
 
 	
 
@@ -158,11 +158,21 @@ function cargarDatosEnMapa(){
 	
 	var cluster = L.markerClusterGroup({disableClusteringAtZoom: 18});
 
-	console.log('mymap al cargar mapa: ', mymap)	
-
 	var data;
 	
 	mymap.addLayer(cluster);
+
+	if(controlLocate){
+		L.control.locate({
+			locateOptions: {
+			showCompass: true,
+			drawCircle: true,
+			drawMarker: true,
+			setView: 'untilPanOrZoom',
+			enableHighAccuracy: true}
+
+		}).addTo(mymap);
+	}
 
 	if(localStorage.getItem('center') != null){
 			mymap.setView(JSON.parse(localStorage.getItem('center')),localStorage.getItem('zoom'))}
@@ -424,15 +434,6 @@ function inicio(){
 
 	mymap.addLayer(base);
 
-	L.control.locate({
-		locateOptions: {
-			showCompass: true,
-			drawCircle: true,
-			drawMarker: true,
-			setView: 'untilPanOrZoom',
-			enableHighAccuracy: true}
-
-	}).addTo(mymap);
 
 	if(!localStorage.getItem('center')){
 
@@ -451,12 +452,15 @@ function inicio(){
 	if(nombre){
 
 		$('#txtBuscar').val(nombre);
-		buscar();
+		
+		localStorage.setItem('nombre',nombre)
+
+		cargarDatosEnMapa(true);
 
 	}
 	else{
 
-		cargarDatosEnMapa();
+		cargarDatosEnMapa(true);
 
 	}
 
