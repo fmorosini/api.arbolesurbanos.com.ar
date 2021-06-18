@@ -54,7 +54,7 @@
 <script src="js/leaflet-tilelayer-wmts.js"></script>
 <link rel='stylesheet' href="js/leaflet-compass.min.css" />
 <script src="js/leaflet-compass.min.js"></script>
-
+<script src="js/Leaflet.Control.Custom.js"></script>
 <script type="application/javascript">
 
 {
@@ -77,6 +77,8 @@ function limpiarSugerencias(){
 	$('#txtBuscar').val('');
 
 	localStorage.removeItem('nombre')
+
+	window.location.search = ''
 	
 	cargarDatosEnMapa();
 }
@@ -89,7 +91,7 @@ function buscar(){
 
 	$('#txtBuscar').val(nombre)
 
-	$('#suggestions').fadeOut(1000);
+	$('#suggestions').fadeOut(1000);	
 
 	cargarDatosEnMapa();
 
@@ -173,6 +175,27 @@ function cargarDatosEnMapa(){
 				title: "Usted está aquí!"}
 			
 		}).addTo(mymap);
+
+		L.control.custom({
+			position: 'topleft',
+			content : "<button><i class='fa fa-home'></i></button>",
+			classes : 'leaflet-bar',
+			style   :
+			{
+				margin: '10px',
+				padding: '0',
+				cursor: 'pointer',
+			},
+			events:
+			{
+				click: function(data)
+				{
+					mymap.setZoom(7);
+					mymap.setView([-40.65, -71.3498]);
+				}
+			}
+		})
+		.addTo(mymap);
 
 	var contenedor = document.getElementsByClassName('leaflet-top leaflet-left')[0]
 
@@ -506,11 +529,11 @@ function inicio(){
 		<div class="buscador">			
 			<form id="frmBuscar" class="form-inline" method="post">				
 				<div id="formulario" class="input-group input-group-sm">
-					<input class="search_query form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias() onfocus=borratxt() />
+					<input class="form-control" type="text" name="txtBuscar" id="txtBuscar" placeholder="Nombre científico/vulgar" autocomplete="off" onkeyup=traeSugerencias() onfocus=borratxt() />					
 					<span class="input-group-btn">
 						<button id="btnBuscar" type="button" class="btn btn-info btn-flat" onclick=buscar();><i class="fa fa-search"></i></button>
 						<button id="btnBorrar" type="button" class="btn btn-info btn-flat" onclick=limpiarSugerencias();><i class="fa fa-trash"></i></button>
-					</span>					
+					</span>	
     			</div>
 			</form>
 			<div id="suggestions"></div>
