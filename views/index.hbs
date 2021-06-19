@@ -179,7 +179,7 @@ function cargarDatosEnMapa(){
 		L.control.custom({
 			position: 'topleft',
 			content : "<button><i class='fa fa-home'></i></button>",
-			classes : 'leaflet-bar',
+			classes : 'clase-home-fake leaflet-bar',
 			style   :
 			{
 				margin: '10px',
@@ -201,6 +201,14 @@ function cargarDatosEnMapa(){
 
 	var controles = document.getElementsByClassName('leaflet-control-locate')
 
+
+	if(controles.length > 1){
+
+		contenedor.removeChild(controles[0])
+
+	}
+
+	controles = document.getElementsByClassName('clase-home-fake')
 
 	if(controles.length > 1){
 
