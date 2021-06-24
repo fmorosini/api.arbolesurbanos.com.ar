@@ -45,7 +45,7 @@ app.use(express.static(publicPath))
 //Devuelve un array con los nonbres vulgares y científicos ordenados por nombre filtrados por un LIKE del parámetro
 
 
-app.get('/nombres/:buscar', (req,res) => {
+app.get('/json/nombres/:buscar', (req,res) => {
 
         
     let nombre = req.params.buscar.toUpperCase()
@@ -74,7 +74,7 @@ app.get('/nombres/:buscar', (req,res) => {
 
 // Trae Todos los arbolitos
 
-app.get('/arbolitos', (req,res) => {
+app.get('/json/arbolitos', (req,res) => {
 
     let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
      
@@ -91,7 +91,7 @@ app.get('/arbolitos', (req,res) => {
 
 // Trae arbolitos filtrado por nombre científico o vulgar
 
-app.get('/arbolitos/:nombre', (req,res) => {
+app.get('/json/arbolitos/:nombre', (req,res) => {
 
     let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
 
@@ -113,7 +113,7 @@ app.get('/arbolitos/:nombre', (req,res) => {
 
 // Trae arbolitos por localidad y nombre cientifico o vulgar (opcional)
 
-app.get('/arbolitos/localidades/:localidad', (req,res) => {
+app.get('/json/arbolitos/localidades/:localidad', (req,res) => {
 
     let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
 
@@ -141,7 +141,7 @@ app.get('/arbolitos/localidades/:localidad', (req,res) => {
    
 })
 
-app.post('/arbolitos/bbox/', (req,res) => {
+app.post('/json/arbolitos/bbox/', (req,res) => {
 //
     let nombre = req.query.nombre.toUpperCase()
 
@@ -178,7 +178,7 @@ app.post('/arbolitos/bbox/', (req,res) => {
 })
 
 
-app.get('/especies', (req,res) => {
+app.get('/json/especies', (req,res) => {
 
     base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
     .then(data => {
@@ -190,7 +190,7 @@ app.get('/especies', (req,res) => {
 })
 
 
-app.get('/localidades', (req,res) => {
+app.get('/json/localidades', (req,res) => {
 
     base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by ogc_fid')
     .then(data => {
