@@ -43,7 +43,7 @@ app.use(express.static(publicPath))
 //  ============================================= GETs =====================================================================================================
 
 //Devuelve un array con los nonbres vulgares y científicos ordenados por nombre filtrados por un LIKE del parámetro
-
+//Se usa en el buscador del visualizador (sólo para eso)
 
 app.get('/json/nombres/:buscar', (req,res) => {
 
@@ -73,6 +73,7 @@ app.get('/json/nombres/:buscar', (req,res) => {
 })
 
 // Trae Todos los arbolitos
+/*
 
 app.get('/json/arbolitos', (req,res) => {
 
@@ -87,10 +88,11 @@ app.get('/json/arbolitos', (req,res) => {
     })
    
 })
+*/
 
 
 // Trae arbolitos filtrado por nombre científico o vulgar
-
+/*
 app.get('/json/arbolitos/:nombre', (req,res) => {
 
     let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
@@ -99,8 +101,7 @@ app.get('/json/arbolitos/:nombre', (req,res) => {
 
     sql += ` where (upper(nombrecientifico) like '${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
 
-    //console.log(sql)
-      
+        
     base.any(sql)
     
     .then(data => {
@@ -110,9 +111,10 @@ app.get('/json/arbolitos/:nombre', (req,res) => {
     })
    
 })
+*/
 
 // Trae arbolitos por localidad y nombre cientifico o vulgar (opcional)
-
+/*
 app.get('/json/arbolitos/localidades/:localidad', (req,res) => {
 
     let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
@@ -140,22 +142,24 @@ app.get('/json/arbolitos/localidades/:localidad', (req,res) => {
     })
    
 })
+*/
 
-app.post('/json/arbolitos/bbox/', (req,res) => {
+app.get('/json/arbolitos/', (req,res) => {
+
+    
 //
-    let nombre = req.query.nombre.toUpperCase()
+    let nombre = req.query.nombre ? req.query.nombre.toUpperCase() : ''
 
-    let bbox = req.body
+    let bbox = ''
 
-    //console.log(bbox)
-   
-    
-    let x1 = bbox['NE'][0]
-    let y1 = bbox['NE'][1]
-    let x2 = bbox['SO'][0]
-    let y2 = bbox['SO'][1]   
-    
-    let sql = `select nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
+    let x1 = 0
+    let y1 = 0
+    let x2 = 0
+    let y2 = 0 
+
+    let localidad = ''
+
+    let sql = `select  nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where 1=1`
     
     if(nombre){
 
@@ -163,12 +167,35 @@ app.post('/json/arbolitos/bbox/', (req,res) => {
 
     }
     
+    if(req.body.bbox){
+     
+        bbox = req.body.bbox
+        
+        x1 = bbox['NE'][0]
+        y1 = bbox['NE'][1]
+        x2 = bbox['SO'][0]
+        y2 = bbox['SO'][1]   
+
+        sql += ` and st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
+    }
+
+    if(req.body.localidad){
+
+        localidad = req.body.localidad
+
+        sql += ` and upper(nombre) = upper('${localidad}')`
+
+    }
+
+    //console.log(sql)   
+    
+    
     base.result(sql)
     .then(data => {
 
         //res.send(toGeoJSON(data))
 
-        res.send(data)
+        res.send(toGeoJSON(data.rows))
 
     })  
 
@@ -183,7 +210,7 @@ app.get('/json/especies', (req,res) => {
     base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
     .then(data => {
 
-        res.send(data)
+        res.send({'data': data.rows})
 
     })
    
@@ -195,7 +222,7 @@ app.get('/json/localidades', (req,res) => {
     base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by ogc_fid')
     .then(data => {
 
-        res.send(data)
+        res.send({'data': data.rows})
 
     })
    
