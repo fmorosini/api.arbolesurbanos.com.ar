@@ -1,6 +1,6 @@
 process.env.PORT = process.env.PORT || 3000
 
-let urlDesarrollo = `http://192.168.1.200:${process.env.PORT}/json/`
+let urlDesarrollo = `http://localhost:${process.env.PORT}/json/`
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'desarrollo'
 
