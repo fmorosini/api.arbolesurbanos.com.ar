@@ -216,7 +216,10 @@ app.get('/json/arbolitos/', (req,res) => {
 app.get('/json/especies', (req,res) => {
 
     especies.findAll()
-     .then((data) => res.send(data))    
+     .then((data) => res.send({
+         data: data
+        }
+      ))    
      .catch((e) => console.log(e))
      .finally(() => sequelize.close())
 
