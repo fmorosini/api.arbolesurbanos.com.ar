@@ -2,6 +2,10 @@ require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+
+const { Op, Sequelize } = require('sequelize')
+const initModels = require('./models/init-models')
+
 const pg = require('postgis-promise')({geoJSON: true})
 
 const { toGeoJSON } = require('./utils/features.js')
@@ -11,6 +15,10 @@ const hbs = require('hbs')
 const path = require('path')
 
 const app = express()
+
+const sequelize = new Sequelize('postgres://postgres:kkck0303456@localhost:5432/arbolado')
+
+const { especies } = initModels(sequelize)
 
 app.set('view engine', 'hbs');
 
@@ -207,12 +215,21 @@ app.get('/json/arbolitos/', (req,res) => {
 
 app.get('/json/especies', (req,res) => {
 
+    especies.findAll()
+     .then((data) => res.send(data))    
+     .catch((e) => console.log(e))
+     .finally(() => sequelize.close())
+
+    /*
+
     base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
     .then(data => {
 
         res.send({'data': data.rows})
 
     })
+
+    */
    
 })
 
@@ -269,6 +286,10 @@ app.listen(process.env.PORT, (err) => {
     console.log(`Servidor corriendo en puerto ${ process.env.PORT }`)
 
     console.log(process.env.NODE_ENV)
+
+    sequelize.authenticate()
+    .then(() =>  console.log("Conectado a la BBDD via sequelize"))
+    .catch((e) => console.log(e))
 
 })
 
