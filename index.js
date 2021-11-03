@@ -16,9 +16,9 @@ const path = require('path')
 
 const app = express()
 
-const sequelize = new Sequelize('postgres://postgres:kkck0303456@localhost:5432/arbolado')
+const sequelize = new Sequelize(process.env.urlDB)
 
-const { especies } = initModels(sequelize)
+const { especies, localidades } = initModels(sequelize)
 
 app.set('view engine', 'hbs');
 
@@ -80,82 +80,10 @@ app.get('/json/nombres/:buscar', (req,res) => {
    
 })
 
-// Trae Todos los arbolitos
-/*
-
-app.get('/json/arbolitos', (req,res) => {
-
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
-     
-    base.any(sql)
-    
-    .then(data => {
-
-        res.send(toGeoJSON(data))
-
-    })
-   
-})
-*/
-
-
-// Trae arbolitos filtrado por nombre científico o vulgar
-/*
-app.get('/json/arbolitos/:nombre', (req,res) => {
-
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
-
-    let nombre = req.params.nombre.toUpperCase()
-
-    sql += ` where (upper(nombrecientifico) like '${nombre}%' or upper(nombrevulgar) like '%${nombre}%')`
-
-        
-    base.any(sql)
-    
-    .then(data => {
-
-        res.send(toGeoJSON(data))
-
-    })
-   
-})
-*/
-
-// Trae arbolitos por localidad y nombre cientifico o vulgar (opcional)
-/*
-app.get('/json/arbolitos/localidades/:localidad', (req,res) => {
-
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
-
-    let localidad = req.params.localidad.toUpperCase()
-
-    let nombre = req.query.nombre
-
-    sql += ` where upper(nombre) = '${localidad}'`
-
-    if(nombre){
-
-        sql += ` and (upper(nombrecientifico) like '%${nombre.toUpperCase()}%' or upper(nombrevulgar) like '%${nombre.toUpperCase()}%')`
-
-    }
-
-    //console.log(sql)
-      
-    base.any(sql)
-    
-    .then(data => {
-
-        res.send(toGeoJSON(data))
-
-    })
-   
-})
-*/
 
 app.get('/json/arbolitos/', (req,res) => {
+   
 
-    
-//
     let nombre = req.query.nombre ? req.query.nombre.toUpperCase() : ''
 
     let bbox = ''
@@ -194,14 +122,10 @@ app.get('/json/arbolitos/', (req,res) => {
         sql += ` and upper(nombre) = upper('${localidad}')`
 
     }
-
-    //console.log(sql)   
     
     
     base.result(sql)
     .then(data => {
-
-        //res.send(toGeoJSON(data))
 
         res.send(toGeoJSON(data.rows))
 
@@ -215,36 +139,27 @@ app.get('/json/arbolitos/', (req,res) => {
 
 app.get('/json/especies', (req,res) => {
 
+    
     especies.findAll()
      .then((data) => res.send({
          data: data
         }
       ))    
      .catch((e) => console.log(e))
-     .finally(() => sequelize.close())
 
-    /*
-
-    base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
-    .then(data => {
-
-        res.send({'data': data.rows})
-
-    })
-
-    */
-   
+      
 })
 
 
 app.get('/json/localidades', (req,res) => {
 
-    base.result('select nombre,zoom,ST_Transform(ST_SetSRID(wkb_geometry, 5344), 4326) as posicion,ogc_fid from localidades order by ogc_fid')
-    .then(data => {
-
-        res.send({'data': data.rows})
-
-    })
+    localidades.findAll()
+    .then((data) => res.send({
+        data: data
+       }
+     ))    
+    .catch((e) => console.log(e))
+    
    
 })
 
