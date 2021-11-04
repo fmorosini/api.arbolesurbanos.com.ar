@@ -2,6 +2,7 @@ require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const { proyecciones, reproyectar} = require('./functions/projections')
 
 const { Op, Sequelize } = require('sequelize')
 const initModels = require('./models/init-models')
@@ -243,6 +244,30 @@ app.get('/', (req,res) => {
 })
 
 // ========================================== Fin GETs ========================================================================================
+
+// ========================================== POSTs ===========================================================================================
+
+app.post("/json/arbol", (req,res) => {
+
+    const posicion = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, req.body[0])
+
+    const newArbol = arboles.create({
+        especie: 26,
+        localidad: 1,
+        posicion: {
+            type: 'Point',
+            coordinates: posicion,
+            crs: { type: 'name', properties: { name: 'EPSG:5344'} }
+        }
+        
+    })
+
+    res.status(200).send({
+        response: "OK",
+        newArbol
+    })
+
+})
 
 
 app.listen(process.env.PORT, (err) => {
