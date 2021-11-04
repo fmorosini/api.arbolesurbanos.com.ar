@@ -17,6 +17,7 @@
     "pg-hstore": "^2.3.4",
     "pg-promise": "^10.8.0",
     "postgis-promise": "^1.0.0",
+    "proj4": "^2.7.5",
     "sequelize": "^6.9.0"
   }
 }

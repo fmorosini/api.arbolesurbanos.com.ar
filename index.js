@@ -18,7 +18,7 @@ const app = express()
 
 const sequelize = new Sequelize(process.env.urlDB)
 
-const { especies, localidades } = initModels(sequelize)
+const { especies, localidades, arboles } = initModels(sequelize)
 
 app.set('view engine', 'hbs');
 
@@ -161,6 +161,54 @@ app.get('/json/localidades', (req,res) => {
     .catch((e) => console.log(e))
     
    
+})
+
+app.get('/json/prueba', (req,res) => {
+
+    arboles.findAll(
+        {
+            limit: 10,
+            include: 
+                    {
+                        model: especies,
+                        as: "arbol_especie"
+                    }
+        }
+    )
+    .then((data) => {
+
+        res.send({
+
+            type: "FeatureCollection",
+            features: data.map((arbol,index) => {
+                
+                return (
+
+                {
+                    type: "Feature",
+                    geometry: {
+                        type: arbol.posicionWGS84.type,
+                        coordinates: arbol.posicionWGS84.coordinates
+                        },
+                        properties: {
+                            nombrevulgar: arbol.arbol_especie.nombrevulgar,
+                            nombrecientifico: arbol.arbol_especie.nombrecientifico,
+                            tipo: arbol.arbol_especie.tipo,
+                            magnitud: arbol.arbol_especie.magnitud,
+                            follaje: arbol.arbol_especie.follaje,
+                            imagen: arbol.arbol_especie.imagen,
+                            thumbnail: arbol.arbol_especie.thumbnail,
+                            url_ficha: arbol.arbol_especie.url_ficha
+                        }
+                        
+                    })
+
+            })
+
+        })
+
+    })
+
 })
 
 app.get('/', (req,res) => {
