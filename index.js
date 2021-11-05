@@ -1,7 +1,7 @@
 require('./config/config')
 const express = require('express')
-const bodyParser = require('body-parser')
 const cors = require('cors')
+
 const { proyecciones, reproyectar} = require('./functions/projections')
 
 const { Op, Sequelize } = require('sequelize')
@@ -22,9 +22,6 @@ const sequelize = new Sequelize(process.env.urlDB)
 const { especies, localidades, arboles } = initModels(sequelize)
 
 app.set('view engine', 'hbs');
-
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -54,7 +51,7 @@ app.use(express.static(publicPath))
 //Devuelve un array con los nonbres vulgares y científicos ordenados por nombre filtrados por un LIKE del parámetro
 //Se usa en el buscador del visualizador (sólo para eso)
 
-app.get('/json/nombres/:buscar', (req,res) => {
+app.get('/controllers/nombres/:buscar', (req,res) => {
 
         
     let nombre = req.params.buscar.toUpperCase()
@@ -82,12 +79,12 @@ app.get('/json/nombres/:buscar', (req,res) => {
 })
 
 
-app.get('/json/arbolitos/', (req,res) => {
+app.get('/json/arboles/', (req,res) => {
    
 
     let nombre = req.query.nombre ? req.query.nombre.toUpperCase() : ''
 
-    let bbox = ''
+    let bbox = null
 
     let x1 = 0
     let y1 = 0
