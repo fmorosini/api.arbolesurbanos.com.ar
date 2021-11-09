@@ -18,10 +18,11 @@ app.use(function(req, res, next) {
   });
 
 
-app.use(require("./routes/geojson/get"))
-app.use(require("./routes/json/post"))
-app.use(require("./routes/misc/get"))
-app.use(require("./routes/json/get"))
+app.use(require("./routes/geojson/get")) // Rutas que aceptan HTTP GET y devueven datos formateados en GeoJSON
+app.use(require("./routes/json/post"))   // Rutas que aceptan HTTP POST y requieren los datos en JSON
+app.use(require("./routes/json/put"))    // Rutas que aceptan HTTP PUT y requieren los datos en JSON
+app.use(require("./routes/misc/get"))    // Rutas que aceptan HTTP GET y devuelven los datos en formatos falopa para necesidades puntuales de las App
+app.use(require("./routes/json/get"))    // Rutas que aceptan HTTP GET y devuelven datos formateados en JSON
 
 app.listen(process.env.PORT, (err) => {
 

@@ -7,7 +7,7 @@ const verificaToken = require("./verificaToken")
 const verificaAuth = (req,res,next) => {
 
 
-    const idToken = req.get("token")
+    const idToken = req.get("token") 
 
     if(idToken){
     
