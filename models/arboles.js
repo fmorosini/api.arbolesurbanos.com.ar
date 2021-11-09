@@ -47,6 +47,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.fn('now')
+    },
+    usuario: {
+      type: DataTypes.STRING(50),
+      allowNull: true
     }
   }, {
     sequelize,

@@ -2,6 +2,8 @@ const express = require("express")
 
 const app = express()
 
+const { verificaAuth } = require("../../auth/verificaAuth")
+
 const { proyecciones, reproyectar} = require('../../functions/projections')
 const { Op, Sequelize } = require('sequelize')
 
@@ -12,14 +14,25 @@ const sequelize = new Sequelize(process.env.urlDB)
 const { arboles } = initModels(sequelize)
 
 
-app.post("/json/arbol", (req,res) => {
+app.post("/json/arbol", verificaAuth, (req,res) => {
 
     let { especie, localidad, posicion } = req.body  
     
+    if(!req.usuario){
+
+        res.status(401).send({
+            response: "Error",
+            message: "No autorizado"
+        })
+
+       return
+
+    }
+
     if (especie && posicion && localidad){
       
         posicion = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, posicion)
-        
+                        
         arboles.create({
             especie: especie,
             localidad: localidad,
@@ -27,7 +40,8 @@ app.post("/json/arbol", (req,res) => {
                 type: 'Point',
                 coordinates: posicion,
                 crs: { type: 'name', properties: { name: 'EPSG:5344'} }
-            }
+            },
+            usuario: req.usuario
             
         }).then((newArbol) => {
 
@@ -47,7 +61,7 @@ app.post("/json/arbol", (req,res) => {
 
         })
         
-
+        
         
 
     }
@@ -58,7 +72,10 @@ app.post("/json/arbol", (req,res) => {
             message: "La petición está mal formada"
         })
 
+
     }
+
+    
 })
 
 module.exports = app
