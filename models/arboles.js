@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     posicion: {
-      type: DataTypes.GEOMETRY('GEOMETRY', 0),
+      type: DataTypes.GEOMETRY('POINT', 5344),
       allowNull: false
     },
     posicionWGS84: {

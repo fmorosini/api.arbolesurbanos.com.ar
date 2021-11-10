@@ -56,7 +56,15 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
             arboles.update({
                 //posicion: nuevaPosicion || data.posicion.coordinates,
                 especie: nuevaEspecie || data.especie,
-                localidad: nuevaLocalidad || data.localidad
+                localidad: nuevaLocalidad || data.localidad,
+                posicion: (nuevaPosicion ?  
+                   {
+                        type: 'Point',
+                        coordinates: nuevaPosicion,
+                        crs: { type: 'name', properties: { name: 'EPSG:5344'} 
+                        }
+                    }
+                 : data.posicion)
             },
             {
                 where: {

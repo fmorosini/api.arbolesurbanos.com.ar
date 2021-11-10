@@ -9,6 +9,8 @@ const verificaAuth = (req,res,next) => {
 
     const idToken = req.get("token") 
 
+    console.log(idToken)
+
     if(idToken){
     
         verificaToken(idToken)
@@ -17,6 +19,7 @@ const verificaAuth = (req,res,next) => {
             next()
         })
         .catch((error) => {
+            console.log(error)
             req.usuario = null
             next()
         })
