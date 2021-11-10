@@ -5,7 +5,7 @@ const app = express()
 const { verificaAuth } = require("../../auth/verificaAuth")
 
 const { proyecciones, reproyectar} = require('../../functions/projections')
-const { Op, Sequelize } = require('sequelize')
+const { Sequelize } = require('sequelize')
 
 const initModels = require('../../models/init-models')
 

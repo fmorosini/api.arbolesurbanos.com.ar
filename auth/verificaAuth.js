@@ -8,9 +8,7 @@ const verificaAuth = (req,res,next) => {
 
 
     const idToken = req.get("token") 
-
-    console.log(idToken)
-
+    
     if(idToken){
     
         verificaToken(idToken)

@@ -13,12 +13,9 @@ const sequelize = new Sequelize(process.env.urlDB)
 
 const { arboles } = initModels(sequelize)
 
-app.put("/json/arbol", verificaAuth, (req,res) => {
+app.delete("/json/arbol", verificaAuth, (req,res) => {
 
     const id = req.body.id
-    const nuevaEspecie = req.body.especie
-    const nuevaLocalidad = req.body.localidad
-    let nuevaPosicion = req.body.posicion
 
     if(!req.usuario){
 
@@ -40,42 +37,23 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
 
         return
 
-    }
-
-    if(nuevaPosicion){
-
-        nuevaPosicion = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, nuevaPosicion)
-    }
+    }   
+   
 
     arboles.findByPk(id)
     .then((data) => {
 
         if(data){
-            
 
-            arboles.update({
-                //posicion: nuevaPosicion || data.posicion.coordinates,
-                especie: nuevaEspecie || data.especie,
-                localidad: nuevaLocalidad || data.localidad,
-                posicion: (nuevaPosicion ?  
-                   {
-                        type: 'Point',
-                        coordinates: nuevaPosicion,
-                        crs: { type: 'name', properties: { name: 'EPSG:5344'} 
-                        }
-                    }
-                 : data.posicion)
-            },
-            {
+            arboles.destroy({
                 where: {
-                id: id
-            }})
+                    id: id
+                }
+            })
             .then(() => {
                 res.status(200).send({
-
                     response: "OK",
-                    message: `Se actualizó árbol ${id}`
-
+                    message: `Se borró árbol ${id}`
                 })
             })
             .catch((error) => {
@@ -85,14 +63,13 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
                 })
             })
 
-        }
+        } 
         else{
             res.status(404).send({
                 response: "Error",
                 message: "arbol no encontrado"
             })
         }
-
     })
     .catch((error) => {
 
@@ -103,10 +80,6 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
 
     })
 
-
-
-} )
-
-
+})
 
 module.exports = app
