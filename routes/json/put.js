@@ -1,16 +1,10 @@
 const express = require("express")
-
 const app = express()
-
 const { verificaAuth } = require("../../auth/verificaAuth")
-
 const { proyecciones, reproyectar} = require('../../functions/projections')
 const { Sequelize } = require('sequelize')
-
 const initModels = require('../../models/init-models')
-
 const sequelize = new Sequelize(process.env.urlDB)
-
 const { arboles } = initModels(sequelize)
 
 app.put("/json/arbol", verificaAuth, (req,res) => {
@@ -58,13 +52,13 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
                 especie: nuevaEspecie || data.especie,
                 localidad: nuevaLocalidad || data.localidad,
                 posicion: (nuevaPosicion ?  
-                   {
+                {
                         type: 'Point',
                         coordinates: nuevaPosicion,
                         crs: { type: 'name', properties: { name: 'EPSG:5344'} 
                         }
                     }
-                 : data.posicion)
+                : data.posicion)
             },
             {
                 where: {

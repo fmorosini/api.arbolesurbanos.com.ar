@@ -1,14 +1,5 @@
-/* 
-
-Todos los endpoints misceláneos que aceptan GET
-Usados para necesidades puntuales del Front End
-
-*/
-
-const pg = require('postgis-promise')({geoJSON: true})
-
+const pg = require('postgis-promise')
 const express = require("express")
-
 const app = express()
 
 const abreDB = () => {
@@ -19,9 +10,10 @@ const abreDB = () => {
 
 }
 
-const base = abreDB()
 
 app.get('/misc/nombres/:buscar', (req,res) => {
+
+    const base = abreDB()
 
         
     let nombre = req.params.buscar.toUpperCase()

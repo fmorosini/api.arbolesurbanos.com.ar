@@ -1,16 +1,10 @@
 const express = require("express")
-
 const app = express()
-
 const { verificaAuth } = require("../../auth/verificaAuth")
-
 const { proyecciones, reproyectar} = require('../../functions/projections')
 const { Sequelize } = require('sequelize')
-
 const initModels = require('../../models/init-models')
-
 const sequelize = new Sequelize(process.env.urlDB)
-
 const { arboles } = initModels(sequelize)
 
 

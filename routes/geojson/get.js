@@ -1,19 +1,8 @@
-/*
-
-Todos los endpoints que aceptan GET y devuelven GeoJSON
-
-*/
-
 const bodyParser = require("body-parser")
-
-const { proyecciones, reproyectar} = require('../../functions/projections')
-const { Op, Sequelize } = require('sequelize')
+const { Sequelize } = require('sequelize')
 const initModels = require('../../models/init-models')
-
 const sequelize = new Sequelize(process.env.urlDB)
-
-const { localidades, arboles, especies } = initModels(sequelize)
-
+const { localidades } = initModels(sequelize)
 const express = require("express")
 
 const app = express()
@@ -43,8 +32,8 @@ app.get('/geojson/localidades', (req,res) => {
                     })
 
             })
-       }
-     ))    
+    }
+    ))    
     .catch((error) => {
         
         res.status(500).send({
@@ -52,14 +41,13 @@ app.get('/geojson/localidades', (req,res) => {
             message: error
         })
 
-    })
-    
-   
+    })    
+
 })
 
 app.get('/geojson/arboles', (req,res) => {
 
-   
+
     let nombre = req.query.nombre ? req.query.nombre.toUpperCase() : ''
 
     let bbox = ''
@@ -129,7 +117,7 @@ app.get('/geojson/arboles', (req,res) => {
         })
 
     })  
-    .catch((err) => {
+    .catch((error) => {
 
         res.status(500).send({
             response: "Error",
