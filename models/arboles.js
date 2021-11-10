@@ -1,4 +1,6 @@
 const Sequelize = require('sequelize');
+const { proyecciones, reproyectar } = require('../functions/projections')
+
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('arboles', {
     id: {
@@ -8,8 +10,22 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     posicion: {
-      type: DataTypes.GEOMETRY('GEOMETRY', 0),
+      type: DataTypes.GEOMETRY('POINT', 5344),
       allowNull: false
+    },
+    posicionWGS84: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const rawValue = this.getDataValue('posicion');
+        let coordenadas = reproyectar(proyecciones.EPSG5344,proyecciones.WGS84,rawValue.coordinates)
+
+        return {
+          crs: { type: 'name', properties: { name: 'EPSG:4326' } },
+          type: 'Point',
+          coordinates: coordenadas
+        }
+      },
+      allowNull: true
     },
     especie: {
       type: DataTypes.INTEGER,
@@ -31,6 +47,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.fn('now')
+    },
+    usuario: {
+      type: DataTypes.STRING(50),
+      allowNull: true
     }
   }, {
     sequelize,
