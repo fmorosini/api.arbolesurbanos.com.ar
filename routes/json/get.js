@@ -2,7 +2,6 @@ const express = require("express")
 
 const app = express()
 
-const { proyecciones, reproyectar} = require('../../functions/projections')
 const { Op, Sequelize } = require('sequelize')
 
 const initModels = require('../../models/init-models')
@@ -13,18 +12,36 @@ const { especies } = initModels(sequelize)
 
 app.get('/json/especies', (req,res) => {
 
+  let nombre = req.query.nombre ? req.query.nombre : null
+
+  const predicate = nombre ? 
+    {
+      where: {
+        [Op.or]:
+          [
+            {nombrecientifico: {
+              [Op.iLike]: `${nombre}%`
+            }},
+            {nombrevulgar: {
+              [Op.iLike]: `${nombre}%`
+            }}
+          ]
+
+        }  
+    }  
+  : {}
+
     
-    especies.findAll()
-     .then((data) => res.send({
-         data: data
-        }
-      ))    
-     .catch((error) => {
-         res.status(500).send({
-           response: "Error",
-           message: error
-         })
-       })
+  especies.findAll(predicate)
+  .then((data) => res.send({
+      data: data
+  }))    
+    .catch((error) => {
+        res.status(500).send({
+          response: "Error",
+          message: error
+        })
+      })
 
       
 })
