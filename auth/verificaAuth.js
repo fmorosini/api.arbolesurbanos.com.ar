@@ -13,7 +13,7 @@ const verificaAuth = (req,res,next) => {
     
         verificaToken(idToken)
         .then((usuario) => {
-            req.usuario = usuario.email
+            req.usuario = usuario.uid
             next()
         })
         .catch((error) => {
