@@ -25,15 +25,14 @@ app.post("/json/arbol", verificaAuth, (req,res) => {
 
     if (especie && posicion && localidad){
       
-                
-        posicion = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, posicion)
+        const punto = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344,[posicion.lon, posicion.lat])
                         
         arboles.create({
             especie: especie,
             localidad: localidad,
             posicion: {
                 type: 'Point',
-                coordinates: posicion,
+                coordinates: punto,
                 crs: { type: 'name', properties: { name: 'EPSG:5344'} }
             },
             usuario: req.usuario

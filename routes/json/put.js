@@ -36,9 +36,11 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
 
     }
 
+    let punto = null
+
     if(nuevaPosicion){
 
-        nuevaPosicion = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, nuevaPosicion)
+        punto = reproyectar(proyecciones.WGS84, proyecciones.EPSG5344, [nuevaPosicion.lon,nuevaPosicion.lat])
     }
 
     arboles.findByPk(id)
@@ -51,10 +53,10 @@ app.put("/json/arbol", verificaAuth, (req,res) => {
                 //posicion: nuevaPosicion || data.posicion.coordinates,
                 especie: nuevaEspecie || data.especie,
                 localidad: nuevaLocalidad || data.localidad,
-                posicion: (nuevaPosicion ?  
+                posicion: (punto ?  
                 {
                         type: 'Point',
-                        coordinates: nuevaPosicion,
+                        coordinates: punto,
                         crs: { type: 'name', properties: { name: 'EPSG:5344'} 
                         }
                     }
