@@ -59,11 +59,13 @@ app.get('/geojson/arboles', (req,res) => {
 
     let localidad = ''
 
-    let sql = `select  nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion from arbolitos where 1=1`
+    let sql = `select  e.nombrecientifico,e.nombrevulgar,e.imagen,e.thumbnail,e.url_ficha,e.follaje,e.magnitud,e.tipo,ST_Transform(ST_SetSRID(a.posicion, 5344), 4326) as posicion from arboles as a `
+    sql += ` inner join especies as e on a.especie = e.id `
+    sql += ` inner join localidades as l on a.localidad = l.ogc_fid where 1=1`
     
     if(nombre){
 
-        sql += ` and (upper(nombrecientifico) like '${nombre}%' or upper(nombrevulgar) like '${nombre}%')`
+        sql += ` and (upper(e.nombrecientifico) like '${nombre}%' or upper(e.nombrevulgar) like '${nombre}%')`
 
     }
     
@@ -76,14 +78,14 @@ app.get('/geojson/arboles', (req,res) => {
         x2 = bbox['SO'][0]
         y2 = bbox['SO'][1]   
 
-        sql += ` and st_within(ST_Transform(ST_SetSRID(posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
+        sql += ` and st_within(ST_Transform(ST_SetSRID(a.posicion, 5344), 4326),st_makeenvelope(${x1},${y1},${x2},${y2},4326))`
     }
 
     if(req.body.localidad){
 
         localidad = req.body.localidad
 
-        sql += ` and upper(nombre) = upper('${localidad}')`
+        sql += ` and upper(l.nombre) = upper('${localidad}')`
 
     }
     
