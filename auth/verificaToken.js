@@ -10,8 +10,6 @@ const verificaToken = async (token) => {
     
     let usuario = await admin.auth().verifyIdToken(token)
 
-    console.log(usuario)
-
     return usuario
 
 

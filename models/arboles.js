@@ -50,7 +50,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     usuario: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: false,
+      references: {
+        model: 'usuarios',
+        key: 'uid'
+      }
     }
   }, {
     sequelize,

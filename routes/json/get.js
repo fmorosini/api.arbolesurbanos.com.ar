@@ -8,7 +8,17 @@ const initModels = require('../../models/init-models')
 
 const sequelize = new Sequelize(process.env.urlDB)
 
-const { especies } = initModels(sequelize)
+const { especies, usuarios } = initModels(sequelize)
+
+app.get('/json/usuarios', (req,res) => {
+
+  usuarios.findAll({
+    attributes: ['uid','email','apellido','nombre']
+  }).then((data) => res.status(200).send({
+    data: data
+  }))
+
+})
 
 app.get('/json/especies', (req,res) => {
 
@@ -33,7 +43,7 @@ app.get('/json/especies', (req,res) => {
 
     
   especies.findAll(predicate)
-  .then((data) => res.send({
+  .then((data) => res.status(200).send({
       data: data
   }))    
     .catch((error) => {

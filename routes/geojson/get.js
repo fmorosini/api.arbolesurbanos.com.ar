@@ -59,9 +59,11 @@ app.get('/geojson/arboles', (req,res) => {
 
     let localidad = ''
 
-    let sql = `select  e.nombrecientifico,e.nombrevulgar,e.imagen,e.thumbnail,e.url_ficha,e.follaje,e.magnitud,e.tipo,ST_Transform(ST_SetSRID(a.posicion, 5344), 4326) as posicion from arboles as a `
+    let sql = `select  e.nombrecientifico,e.nombrevulgar,e.imagen,e.thumbnail,e.url_ficha,e.follaje,e.magnitud,e.tipo,ST_Transform(ST_SetSRID(a.posicion, 5344), 4326) as posicion,u.uid,u.nombre as nombre_usuario,u.apellido,u.email from arboles as a `
     sql += ` inner join especies as e on a.especie = e.id `
-    sql += ` inner join localidades as l on a.localidad = l.ogc_fid where 1=1`
+    sql += ` inner join localidades as l on a.localidad = l.ogc_fid`
+    sql += ` inner join usuarios as u on a.usuario = u.uid`
+    sql += ` where 1=1`
     
     if(nombre){
 
@@ -111,7 +113,13 @@ app.get('/geojson/arboles', (req,res) => {
                                 url_ficha: arbol.url_ficha,
                                 follaje: arbol.follaje,
                                 magnitud: 3,
-                                tipo: arbol.tipo
+                                tipo: arbol.tipo,
+                                usuario: {
+                                    uid: arbol.uid,
+                                    nombre: arbol.nombre_usuario,
+                                    apellido: arbol.apellido,
+                                    email: arbol.email
+                                }
                             }  
                         })
     

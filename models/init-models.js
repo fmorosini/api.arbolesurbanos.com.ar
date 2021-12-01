@@ -5,6 +5,8 @@ var _especies = require("./especies");
 var _layer = require("./layer");
 var _localidades = require("./localidades");
 var _topology = require("./topology");
+var _usuarios = require("./usuarios");
+
 
 function initModels(sequelize) {
   var arboles = _arboles(sequelize, DataTypes);
@@ -13,6 +15,8 @@ function initModels(sequelize) {
   var layer = _layer(sequelize, DataTypes);
   var localidades = _localidades(sequelize, DataTypes);
   var topology = _topology(sequelize, DataTypes);
+  var usuarios = _usuarios(sequelize, DataTypes);
+
 
   arboles.belongsTo(especies, { as: "arbol_especie", foreignKey: "especie"});
   especies.hasMany(arboles, { as: "arboles", foreignKey: "especie"});
@@ -20,6 +24,8 @@ function initModels(sequelize) {
   localidades.hasMany(arboles, { as: "arboles", foreignKey: "localidad"});
   layer.belongsTo(topology, { as: "topology", foreignKey: "topology_id"});
   topology.hasMany(layer, { as: "layers", foreignKey: "topology_id"});
+  arboles.belongsTo(usuarios, { as: "usuario_usuario", foreignKey: "usuario"});
+  usuarios.hasMany(arboles, { as: "arboles", foreignKey: "usuario"});
 
   return {
     arboles,
@@ -28,6 +34,7 @@ function initModels(sequelize) {
     layer,
     localidades,
     topology,
+    usuarios,
   };
 }
 module.exports = initModels;
