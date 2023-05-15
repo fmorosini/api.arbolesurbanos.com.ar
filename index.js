@@ -72,12 +72,12 @@ app.get('/json/nombres/:buscar', (req,res) => {
    
 })
 
-// Trae Todos los arbolitos
+// Trae Todos los arboles en crudo en JSON
 
 
 app.get('/json/arboles', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,id,especie,localidad,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arboles"
+    let sql = "SELECT id,especie,localidad,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arboles"
      
     base.any(sql)
     
