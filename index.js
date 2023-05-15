@@ -83,7 +83,7 @@ app.get('/json/arboles', (req,res) => {
     
     .then(data => {
 
-        res.send({'data': data.rows})
+        res.send({'data': data})
 
     })
    
