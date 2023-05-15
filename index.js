@@ -77,7 +77,7 @@ app.get('/json/nombres/:buscar', (req,res) => {
 
 app.get('/json/arboles', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,id,especie,localidad,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+    let sql = "SELECT nombrecientifico,nombrevulgar,id,especie,localidad,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arboles"
      
     base.any(sql)
     
