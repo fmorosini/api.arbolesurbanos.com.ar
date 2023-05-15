@@ -73,22 +73,22 @@ app.get('/json/nombres/:buscar', (req,res) => {
 })
 
 // Trae Todos los arbolitos
-/*
 
-app.get('/json/arbolitos', (req,res) => {
 
-    let sql = "SELECT nombrecientifico,nombrevulgar,imagen,thumbnail,url_ficha,follaje,magnitud,tipo,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
+app.get('/json/arboles', (req,res) => {
+
+    let sql = "SELECT nombrecientifico,nombrevulgar,id,especie,localidad,ST_Transform(ST_SetSRID(posicion, 5344), 4326) as posicion FROM arbolitos"
      
     base.any(sql)
     
     .then(data => {
 
-        res.send(toGeoJSON(data))
+        res.send({'data': data.rows})
 
     })
    
 })
-*/
+
 
 
 // Trae arbolitos filtrado por nombre científico o vulgar
