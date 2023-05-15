@@ -207,10 +207,10 @@ app.get('/json/arbolitos/', (req,res) => {
 
 app.get('/json/especies', (req,res) => {
 
-    base.result('select nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
+    base.result('select id,nombrecientifico,nombrevulgar,magnitud,tipo,follaje,imagen,thumbnail,url_ficha from especies order by nombrecientifico')
     .then(data => {
 
-        res.send({'data': data})
+        res.send({'data': data.rows})
 
     })
    
